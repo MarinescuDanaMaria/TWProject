@@ -1,28 +1,32 @@
 const express = require("express");
-const mysql = require("mysql");
 const cors = require("cors");
+const sequelize = require("./config/sequelize"); 
+const User = require("./models/User");  
+const authRoutes = require('./routes/authRoutes');
+const listEndpoints = require('express-list-endpoints'); 
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
-const db = mysql.createConnection({
-    host: "localhost",
-    user: 'root',
-    password: '',
-    database: 'events_app'
-})
-app.get("/", (re, res) => {
+app.get("/", (req, res) => {
   return res.json("From Be");
 });
 
-app.get('/users',(req,res)=>{
-const sql = "SELECT * FROM USERS";
-db.query(sql,(err,data)=>{
-    if(err) return res.json(err);
-    else return res.json(data);
-});
-})
+console.log(listEndpoints(app));
+// app.get("/users", async (req, res) => {
+//   try {
+//     const users = await User.findAll();
+//     return res.json(users); 
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ error: "Nu s-a putut obține utilizatorii" });
+//   }
+// });
+app.use('/users/', authRoutes);
 
-app.listen(8081,()=>{
-    console.log('listening');
-})
+app.listen(8081, () => {
+  console.log("Serverul rulează pe portul 8081");
+  
+console.log(listEndpoints(app));
+});

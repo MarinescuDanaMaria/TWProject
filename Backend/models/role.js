@@ -1,29 +1,28 @@
-const { Model, DataTypes } = require('sequelize');
-const { v4: uuidv4 } = require('uuid');
 
-module.exports = (sequelize) => {
-  class Role extends Model {}
+const { v4: uuidv4 } = require("uuid");
 
-  Role.init(
-    {
-      id: {
-        type: DataTypes.UUID, // UUID pentru identificator unic
-        defaultValue: uuidv4, // Generează automat UUID
-        primaryKey: true,
-      },
-      name: {
-        type: DataTypes.ENUM('USER', 'ORGANIZATOR'), // Enum pentru numele rolului
-        allowNull: false,
-        unique: true, // Fiecare rol trebuie să fie unic
-      },
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/sequelize");
+
+const Role = sequelize.define(
+  "Role",
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: uuidv4,
+      primaryKey: true,
     },
-    {
-      sequelize,
-      modelName: 'Role',
-      tableName: 'roles',
-      timestamps: false, // Dacă nu vrei câmpurile createdAt/updatedAt
-    }
-  );
-
-  return Role;
-};
+    name: {
+      type: DataTypes.ENUM("USER", "ORGANIZATOR"),
+      allowNull: false,
+      unique: true,
+    },
+  },
+  {
+    sequelize,
+    modelName: "Role",
+    tableName: "roles",
+    timestamps: true,
+  }
+);
+module.exports = Role;
