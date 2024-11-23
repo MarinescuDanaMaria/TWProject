@@ -131,8 +131,8 @@ function SignInForm() {
               <input
                 type="radio"
                 value="organizer"
-                checked={role === 'ORGANIZER'}
-                onChange={() => setRole('ORGANIZER')}
+                checked={role === 'ORGANIZATOR'}
+                onChange={() => setRole('ORGANIZATOR')}
                 className="mr-2"
               />
               Organizer
