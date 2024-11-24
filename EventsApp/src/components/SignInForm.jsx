@@ -1,46 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function SignInForm() {
   // State pentru a păstra valorile câmpurilor
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [password, setPassword] = useState('');
-  const [retryPassword, setRetryPassword] = useState('');
-  const [role, setRole] = useState('user');
-  
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [retryPassword, setRetryPassword] = useState("");
+  const [role, setRole] = useState("user");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== retryPassword) {
-      alert('Parolele nu se potrivesc!');
+      alert("Parolele nu se potrivesc!");
       return;
     }
 
     const userData = {
       firstName,
       lastName,
+      email,
       birthDate,
       password,
       retryPassword,
-      role
+      role,
     };
 
     try {
-      const response = await fetch('http://localhost:8081/users/sign-in', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8081/auth/sign-in", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(userData),
       });
 
       if (response.ok) {
-        alert('Contul a fost creat cu succes!');
+        alert("Contul a fost creat cu succes!");
       } else {
-        alert('Eroare la crearea contului!');
+        alert("Eroare la crearea contului!");
       }
     } catch (error) {
-      console.error('Eroare la trimiterea cererii:', error);
+      console.error("Eroare la trimiterea cererii:", error);
     }
   };
 
@@ -50,7 +52,12 @@ function SignInForm() {
       <form onSubmit={handleSubmit}>
         {/* First Name */}
         <div className="mb-4">
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
+          <label
+            htmlFor="firstName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            First Name
+          </label>
           <input
             type="text"
             id="firstName"
@@ -60,10 +67,15 @@ function SignInForm() {
             required
           />
         </div>
-        
+
         {/* Last Name */}
         <div className="mb-4">
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
+          <label
+            htmlFor="lastName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Last Name
+          </label>
           <input
             type="text"
             id="lastName"
@@ -73,10 +85,32 @@ function SignInForm() {
             required
           />
         </div>
+        {/* Email */}
+        <div className="mb-4">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email
+          </label>
+          <input
+            type="text"
+            id="email"
+            className="mt-1 p-2 w-full border rounded-md"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
         {/* Birth Date */}
         <div className="mb-4">
-          <label htmlFor="birthDate" className="block text-sm font-medium text-gray-700">Birth Date</label>
+          <label
+            htmlFor="birthDate"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Birth Date
+          </label>
           <input
             type="date"
             id="birthDate"
@@ -89,7 +123,12 @@ function SignInForm() {
 
         {/* Password */}
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password
+          </label>
           <input
             type="password"
             id="password"
@@ -102,7 +141,12 @@ function SignInForm() {
 
         {/* Retry Password */}
         <div className="mb-4">
-          <label htmlFor="retryPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+          <label
+            htmlFor="retryPassword"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Confirm Password
+          </label>
           <input
             type="password"
             id="retryPassword"
@@ -115,14 +159,16 @@ function SignInForm() {
 
         {/* Role selection */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Role</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Role
+          </label>
           <div className="flex items-center">
             <label className="mr-4">
               <input
                 type="radio"
                 value="user"
-                checked={role === 'USER'}
-                onChange={() => setRole('USER')}
+                checked={role === "USER"}
+                onChange={() => setRole("USER")}
                 className="mr-2"
               />
               User
@@ -131,8 +177,8 @@ function SignInForm() {
               <input
                 type="radio"
                 value="organizer"
-                checked={role === 'ORGANIZATOR'}
-                onChange={() => setRole('ORGANIZATOR')}
+                checked={role === "ORGANIZATOR"}
+                onChange={() => setRole("ORGANIZATOR")}
                 className="mr-2"
               />
               Organizer

@@ -15,6 +15,9 @@ const User = sequelize.define(
     last_name: {
       type: DataTypes.STRING,
     },
+    email: {
+      type: DataTypes.STRING,
+    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -33,7 +36,7 @@ const User = sequelize.define(
   },
   {
     tableName: "USERS",
-    timestamps: false,
+    timestamps: true,
   }
 );
 

@@ -16,12 +16,12 @@ function Header() {
         <div className="ml-auto space-x-4">
           {" "}
           {}
-          <a
-            href="#"
-            className="inline-block px-4 py-2 text-white border border-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition duration-300"
+          <Link
+            to="/login"
+            className="inline-block px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-700 hover:text-white transition duration-300"
           >
-            Log In
-          </a>
+            Login
+          </Link>
           <Link
             to="/sign-in"
             className="inline-block px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-700 hover:text-white transition duration-300"
