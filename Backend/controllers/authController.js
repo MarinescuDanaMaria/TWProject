@@ -53,7 +53,13 @@ async function logIn(req, res) {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({
+      where: { email },
+      include: {
+        model: Role,
+        as: "role",
+      },
+    });
 
     if (!user) {
       return res.status(404).json({ message: "Email-ul nu este înregistrat!" });
@@ -65,14 +71,18 @@ async function logIn(req, res) {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET, 
+      { userId: user.id, email: user.email, role: user.role.name },
+      process.env.JWT_SECRET
     );
 
     res.status(200).json({
       message: "Autentificare reușită!",
       token,
-      user: { id: user.id, name: `${user.first_name} ${user.last_name}`, email: user.email } 
+      user: {
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`,
+        email: user.email,
+      },
     });
   } catch (error) {
     console.error("Eroare la autentificare:", error);

@@ -7,10 +7,4 @@ router.post('/login', logIn);
 
 module.exports = router;
 
-// router.get("/profile", authMiddleware, (req, res) => {
-//   res.status(200).json({
-//     message: "Acces la profilul utilizatorului",
-//     user: req.user, // Datele utilizatorului decodificate din token
-//   });
-// });
 

@@ -19,7 +19,15 @@ const LoginForm = () => {
       const data = await response.json();
       if (response.ok) {
         alert("Autentificare reușită!");
-        localStorage.setItem("token", data.token); 
+        localStorage.setItem("token", data.token);
+        const decodedToken = JSON.parse(atob(data.token.split(".")[1])); 
+        const userRole = decodedToken.role;
+
+        if (userRole === "USER") {
+          navigate("/user/dashboard"); 
+        } else if (userRole === "ORGANIZATOR") {
+          navigate("/organizer/dashboard");
+        }
       } else {
         alert(data.message);
       }
@@ -28,7 +36,7 @@ const LoginForm = () => {
     }
   };
   const handleNavigateToSignUp = () => {
-    navigate("/sign-in"); 
+    navigate("/sign-in");
   };
 
   return (

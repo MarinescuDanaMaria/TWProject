@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/sequelize");
+const Role = require("./Role");
 
 const User = sequelize.define(
   "User",
@@ -39,5 +40,6 @@ const User = sequelize.define(
     timestamps: true,
   }
 );
+User.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
 
 module.exports = User;
