@@ -1,15 +1,17 @@
 "use strict";
 
+// adauga rolurile initiale in tabela roles 
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert(
+    await queryInterface.bulkInsert( // insereaza mai multe randuri in tabel
       "roles",
-      [
+      [ // fiecare obiect din array reprezinta un rand 
         {
           id: Sequelize.literal("UUID()"),
           name: "USER",
-          createdAt: new Date(),
+          createdAt: new Date(), // seteaza timpul
           updatedAt: new Date(),
         },
         {
@@ -24,6 +26,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("roles", null, {});
+    await queryInterface.bulkDelete("roles", null, {}); // sterge toate randurile din tabel
   },
 };

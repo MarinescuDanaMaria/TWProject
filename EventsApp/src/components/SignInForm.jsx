@@ -35,7 +35,10 @@ function SignInForm() {
         },
         body: JSON.stringify(userData),
       });
-
+/////////
+      const data = await response.json(); // Verificăm răspunsul ca JSON
+      console.log("Backend response:", data); // Log pentru răspunsul backend
+//////////
       if (response.ok) {
         alert("Contul a fost creat cu succes!");
       } else {
