@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import Home from "./components/Home";
 import Header from "./components/Header";
 import SignInForm from "./components/SignInForm";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/User/UserDashboard";
 import OrganizerDashboard from "./components/Organizator/OrganizatorDashboard";
-import AddEventForm from "./components/AddEventForm"; // importă AddEventForm
-import EventList from "./components/Organizator/EventList"; // importă EventList
-import AddEventGroupForm from "./components/AddEventGroupForm"; 
+import AddEventForm from "./components/AddEventForm";
+import EventList from "./components/Organizator/EventList";
+import AddEventGroupForm from "./components/AddEventGroupForm";
+import EventGroupDetails from "./components/Organizator/EventGroupDetails";
+import EventDetails from "./components/Organizator/EventDetails";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -17,8 +24,8 @@ function App() {
     const token = localStorage.getItem("token");
 
     if (token) {
-      const decodedToken = JSON.parse(atob(token.split('.')[1])); 
-      setUser({ role: decodedToken.role }); 
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      setUser({ role: decodedToken.role });
     }
   }, []);
 
@@ -33,53 +40,35 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route
             path="/user/dashboard"
-            element={
-              user && user.role === "USER" ? (
-                <UserDashboard />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
+            element={user && user.role === "USER" ? <UserDashboard /> : null}
           />
           <Route
             path="/organizer/dashboard"
             element={
               user && user.role === "ORGANIZATOR" ? (
                 <OrganizerDashboard />
-              ) : (
-                <Navigate to="/login" />
-              )
+              ) : null
             }
           />
-          {/*  rutele pentru AddEventForm si EventList */}
           <Route
-            path="/organizer/add-event"
-            element={
-              user && user.role === "ORGANIZATOR" ? (
-                <AddEventForm />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
+            path="/organizer/add-event/:groupId"
+            element={<AddEventForm />}
           />
           <Route
             path="/organizer/addEventGroup"
             element={
-              user && user.role === "ORGANIZATOR" ? (
-                <AddEventGroupForm />
-              ):null
+              user && user.role === "ORGANIZATOR" ? <AddEventGroupForm /> : null
             }
           />
           <Route
             path="/organizer/events"
-            element={
-              user && user.role === "ORGANIZATOR" ? (
-                <EventList />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
+            element={user && user.role === "ORGANIZATOR" ? <EventList /> : null}
           />
+          <Route
+            path="/organizer/event-group/:id"
+            element={<EventGroupDetails />}
+          />
+          <Route path="/event/:id" element={<EventDetails />} />
         </Routes>
       </div>
     </Router>
@@ -87,4 +76,3 @@ function App() {
 }
 
 export default App;
-
