@@ -6,6 +6,9 @@ import SignInForm from "./components/SignInForm";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/User/UserDashboard";
 import OrganizerDashboard from "./components/Organizator/OrganizatorDashboard";
+import AddEventForm from "./components/AddEventForm"; // importă AddEventForm
+import EventList from "./components/Organizator/EventList"; // importă EventList
+import AddEventGroupForm from "./components/AddEventGroupForm"; 
 
 function App() {
   const [user, setUser] = useState(null);
@@ -18,13 +21,14 @@ function App() {
       setUser({ role: decodedToken.role }); 
     }
   }, []);
+
   return (
     <Router>
       <div>
         <Header />
         <h1>My React App</h1>
         <Routes>
-          <Route path="/" element={<Home />} /> {}
+          <Route path="/" element={<Home />} />
           <Route path="/sign-in" element={<SignInForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route
@@ -47,6 +51,35 @@ function App() {
               )
             }
           />
+          {/*  rutele pentru AddEventForm si EventList */}
+          <Route
+            path="/organizer/add-event"
+            element={
+              user && user.role === "ORGANIZATOR" ? (
+                <AddEventForm />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/organizer/addEventGroup"
+            element={
+              user && user.role === "ORGANIZATOR" ? (
+                <AddEventGroupForm />
+              ):null
+            }
+          />
+          <Route
+            path="/organizer/events"
+            element={
+              user && user.role === "ORGANIZATOR" ? (
+                <EventList />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
         </Routes>
       </div>
     </Router>
@@ -54,3 +87,4 @@ function App() {
 }
 
 export default App;
+
