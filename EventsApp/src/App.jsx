@@ -16,6 +16,7 @@ import EventList from "./components/Organizator/EventList";
 import AddEventGroupForm from "./components/AddEventGroupForm";
 import EventGroupDetails from "./components/Organizator/EventGroupDetails";
 import EventDetails from "./components/Organizator/EventDetails";
+import EditEventForm from "./components/EditEventForm";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -60,15 +61,16 @@ function App() {
               user && user.role === "ORGANIZATOR" ? <AddEventGroupForm /> : null
             }
           />
-          <Route
+          {/* <Route
             path="/organizer/events"
             element={user && user.role === "ORGANIZATOR" ? <EventList /> : null}
-          />
+          /> */}
           <Route
             path="/organizer/event-group/:id"
             element={<EventGroupDetails />}
           />
           <Route path="/event/:id" element={<EventDetails />} />
+          <Route path="organizer/edit/event/:id" element={<EditEventForm />} />
         </Routes>
       </div>
     </Router>

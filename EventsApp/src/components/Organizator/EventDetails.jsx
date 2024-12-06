@@ -10,7 +10,7 @@ function DetailsEvent() {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8081/event/${id}`);
+        const response = await fetch(`http://localhost:8081/organizer/event/${id}`);
 
         if (!response.ok) {
           throw new Error("Nu am putut încărca evenimentul!");
