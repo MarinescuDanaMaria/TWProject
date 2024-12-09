@@ -10,8 +10,6 @@ exports.addEventGroup = async (req, res) => {
       return res.status(400).json({ error: "Numele grupului este obligatoriu!" });
     }
 
-    console.log("Utilizator primit din ..........:", req.user);
-
     const group = await EventGroup.create({
       name,
       idUser: req.user.userId, // Utilizatorul autenticat (de tip organizator)
@@ -22,6 +20,22 @@ exports.addEventGroup = async (req, res) => {
   } catch (error) {
     console.error("Eroare la crearea grupului:", error);
     res.status(500).json({ error: "Eroare la crearea grupului de evenimente." });
+  }
+};
+
+exports.getEventGroupList = async (req, res) => {
+  try {
+    // Obține toate grupurile de evenimente ale utilizatorului autenticat
+    const eventGroups = await EventGroup.findAll({
+      where: {
+        idUser: req.user.userId, // Filtrare pe baza utilizatorului autenticat
+      },
+    });
+
+    res.status(200).json({ eventGroups });
+  } catch (error) {
+    console.error("Eroare la obținerea grupurilor de evenimente:", error);
+    res.status(500).json({ error: "Eroare la obținerea grupurilor de evenimente." });
   }
 };
 

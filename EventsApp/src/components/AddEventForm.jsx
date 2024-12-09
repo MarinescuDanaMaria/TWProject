@@ -192,17 +192,17 @@
 
 import React, { useState } from "react";
 
-function AddEventForm() {
+function AddEventForm({groupId}) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [idGroup, setIdGroup] = useState("");
+  //const [idGroup, setIdGroup] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!name || !description || !startTime || !idGroup) {
+    if (!name || !description || !startTime) {
       alert("Toate câmpurile obligatorii trebuie completate!");
       return;
     }
@@ -212,12 +212,12 @@ function AddEventForm() {
       description,
       startTime,
       endTime,
-      idGroup,
+      idGroup:groupId,
     };
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8081/organizer/events", {
+      const response = await fetch("http://localhost:8081/organizer/add/events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -298,21 +298,6 @@ function AddEventForm() {
             className="mt-1 p-2 w-full border rounded-md"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
-          />
-        </div>
-
-        {/* Group ID */}
-        <div className="mb-4">
-          <label htmlFor="idGroup" className="block text-sm font-medium text-gray-700">
-            Group ID
-          </label>
-          <input
-            type="text"
-            id="idGroup"
-            className="mt-1 p-2 w-full border rounded-md"
-            value={idGroup}
-            onChange={(e) => setIdGroup(e.target.value)}
-            required
           />
         </div>
 

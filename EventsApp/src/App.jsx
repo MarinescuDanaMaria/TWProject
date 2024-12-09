@@ -6,9 +6,11 @@ import SignInForm from "./components/SignInForm";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/User/UserDashboard";
 import OrganizerDashboard from "./components/Organizator/OrganizatorDashboard";
-import AddEventForm from "./components/AddEventForm"; // importă AddEventForm
-import EventList from "./components/Organizator/EventList"; // importă EventList
 import AddEventGroupForm from "./components/AddEventGroupForm"; 
+import EventGroupList from "./components/Organizator/EventGroupList"; // Importă componenta
+import AddEventForm from "./components/AddEventForm";
+
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -51,17 +53,7 @@ function App() {
               )
             }
           />
-          {/*  rutele pentru AddEventForm si EventList */}
-          <Route
-            path="/organizer/add-event"
-            element={
-              user && user.role === "ORGANIZATOR" ? (
-                <AddEventForm />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
+          
           <Route
             path="/organizer/addEventGroup"
             element={
@@ -71,15 +63,23 @@ function App() {
             }
           />
           <Route
-            path="/organizer/events"
-            element={
-              user && user.role === "ORGANIZATOR" ? (
-                <EventList />
-              ) : (
-                <Navigate to="/login" />
-              )
+           path="/organizer/getEventGroupList"
+           element={
+           user && user.role === "ORGANIZATOR" ? (
+             <EventGroupList />
+             ) : null
             }
           />
+          {/*  rutele pentru AddEventForm si EventList */}
+          <Route
+            path="/organizer/addEvent"
+            element={
+              user && user.role === "ORGANIZATOR" ? (
+                <AddEventForm />
+              ) : null
+            }
+          /> 
+          
         </Routes>
       </div>
     </Router>

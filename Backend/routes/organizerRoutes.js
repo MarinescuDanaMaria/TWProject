@@ -4,6 +4,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
 const { addEvent, getEvents } = require("../controllers/eventController"); // import fct controller
 const {addEventGroup}=require("../controllers/eventGroupController");
+const { getEventGroupList } = require("../controllers/eventGroupController");
 
 // importa middleware-urile 
 // ( auth - verif daca ut e autentificat - are token valid )
@@ -28,13 +29,16 @@ router.get("/dashboard", authMiddleware, roleMiddleware("organizer"), (req, res)
 //----------
 
 // Ruta GET pt obt lista even
-router.get("/events", authMiddleware, roleMiddleware("ORGANIZATOR"), getEvents);
+router.get("/get/events/:groupId", authMiddleware, roleMiddleware("ORGANIZATOR"), getEvents);
 
 // Ruta POST pt ad even
-router.post("/events", authMiddleware, roleMiddleware("ORGANIZATOR"), addEvent);
+router.post("/add/events", authMiddleware, roleMiddleware("ORGANIZATOR"), addEvent);
 
 
 ///
 
 router.post("/add/event-groups", authMiddleware, roleMiddleware("ORGANIZATOR"), addEventGroup);
+
+router.get("/get/event-groups",authMiddleware,roleMiddleware("ORGANIZATOR"),getEventGroupList);
+
 module.exports = router;

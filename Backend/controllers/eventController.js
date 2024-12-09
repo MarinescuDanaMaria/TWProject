@@ -25,16 +25,20 @@ const updateEventStatus = (event) => {
 
 exports.getEvents = async (req, res) => {
   try {
+    // Obține toate evenimentele pentru un grup specific
     const events = await Event.findAll({ where: { idGroup: req.params.groupId } });
 
+    // Actualizează statusul fiecărui eveniment
     const updatedEvents = events.map(updateEventStatus);
 
-    res.status(200).json(updatedEvents);
+    // Trimite răspunsul sub forma unui JSON cu cheia `events`
+    res.status(200).json({ events: updatedEvents });
   } catch (error) {
-    console.error(error);
+    console.error("Eroare la obținerea evenimentelor:", error);
     res.status(500).json({ error: "Eroare la obținerea evenimentelor." });
   }
 };
+
 
 // controller pt ad even
 exports.addEvent = async (req, res) => {
