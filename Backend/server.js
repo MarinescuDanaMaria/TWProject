@@ -5,6 +5,7 @@ const sequelize = require("./config/sequelize");
 const User = require("./models/User");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const webRoutes = require("./routes/webRoutes");
 const organizerRoutes = require("./routes/organizerRoutes");
 const listEndpoints = require("express-list-endpoints");
 require("dotenv").config();
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/organizer", organizerRoutes);
+app.use("/",webRoutes);
 
 ///////////debug
 app.use("/auth", (req, res, next) => {

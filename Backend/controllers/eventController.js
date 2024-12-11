@@ -98,7 +98,7 @@ exports.getEventDetails = async (req, res) => {
 };
 exports.getEventsByGroup = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params;e
 
     const events = await Event.findAll({
       where: { idGroup: id },

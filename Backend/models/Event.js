@@ -34,7 +34,7 @@ const EventGroup = require("./EventGroup"); // Importă modelul EventGroup
           idGroup: {
             type: DataTypes.UUID,
             references: {
-              model: "EVENTGROUPS",
+              model: "EventGroups", 
               key: "id",
             },
             allowNull: false,
