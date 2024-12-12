@@ -23,7 +23,11 @@ const LoginForm = () => {
         localStorage.setItem("token", data.token);
         const decodedToken = JSON.parse(atob(data.token.split(".")[1])); 
         const userRole = decodedToken.role;
-
+        const userData = {
+          name: decodedToken.name,
+          role: userRole,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
         if (userRole === "USER") {
           navigate("/user/dashboard"); 
         } else if (userRole === "ORGANIZATOR") {

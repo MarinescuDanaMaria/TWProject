@@ -17,6 +17,7 @@ import AddEventGroupForm from "./components/AddEventGroupForm";
 import EventGroupDetails from "./components/Organizator/EventGroupDetails";
 import EventDetails from "./components/Organizator/EventDetails";
 import EditEventForm from "./components/EditEventForm";
+import WebEventDetails from "./components/WebEventDetails";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -69,6 +70,7 @@ function App() {
             path="/organizer/event-group/:id"
             element={<EventGroupDetails />}
           />
+           <Route path="/event-web/:id" element={<WebEventDetails/>} />
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="organizer/edit/event/:id" element={<EditEventForm />} />
         </Routes>

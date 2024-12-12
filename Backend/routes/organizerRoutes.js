@@ -29,7 +29,7 @@ router.get(
 router.get("/events", authMiddleware, roleMiddleware("ORGANIZATOR"), getEvents);
 router.get("/event/:id", getEventDetails);
 router.get("/group/:id/events", getEventsByGroup);
-router.get("/event/:id", showEvent);
+//router.get("/event/:id", showEvent);
 router.delete("/event/:id", deleteEvent);
 router.put("/event/:id", updateEvent);
 
