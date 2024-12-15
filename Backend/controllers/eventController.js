@@ -3,31 +3,6 @@ const QRCode = require("qrcode");
 const path = require("path");
 const fs = require("fs");
 
-const updateEventStatus = (event) => {
-  const now = new Date();
-  if (event.startTime <= now && event.endTime >= now) {
-    event.status = "OPEN";
-  } else {
-    event.status = "CLOSED";
-  }
-  return event;
-};
-
-exports.getEvents = async (req, res) => {
-  try {
-    const events = await Event.findAll({
-      where: { idGroup: req.params.groupId },
-    });
-
-    const updatedEvents = events.map(updateEventStatus);
-
-    res.status(200).json(updatedEvents);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Eroare la obținerea evenimentelor." });
-  }
-};
-
 exports.addEvent = async (req, res) => {
   try {
     const { name, description, startTime, endTime } = req.body;
@@ -44,7 +19,7 @@ exports.addEvent = async (req, res) => {
       return res.status(404).json({ error: "Grupul nu a fost găsit!" });
     }
 
-    const event = await Event.create({
+    let event = await Event.create({
       name,
       description,
       startTime,
@@ -52,6 +27,7 @@ exports.addEvent = async (req, res) => {
       idGroup: groupId,
       organizerId: req.user.id,
     });
+
     const imagesDir = path.join(__dirname, "../images");
     if (!fs.existsSync(imagesDir)) {
       fs.mkdirSync(imagesDir);
@@ -98,7 +74,7 @@ exports.getEventDetails = async (req, res) => {
 };
 exports.getEventsByGroup = async (req, res) => {
   try {
-    const { id } = req.params;e
+    const { id } = req.params;
 
     const events = await Event.findAll({
       where: { idGroup: id },

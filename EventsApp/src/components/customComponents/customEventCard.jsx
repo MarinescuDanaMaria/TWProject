@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import EditEventForm from "../EditEventForm";
+import EditEventForm from "../Organizator/EventForms/EditEventForm";
 
 const CustomEventCard = ({ event, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);

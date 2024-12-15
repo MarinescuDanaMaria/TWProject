@@ -14,6 +14,12 @@ const EventGroupDetails = () => {
       const response = await fetch(`http://localhost:8081/organizer/group/${id}/events`);
 
       if (!response.ok) {
+        if (response.status === 404) {
+          // Dacă grupul nu are evenimente, setează lista goală fără eroare
+          setEvents([]);
+          setLoading(false);
+          return;
+        }
         throw new Error("Nu am reușit să obținem evenimentele");
       }
 

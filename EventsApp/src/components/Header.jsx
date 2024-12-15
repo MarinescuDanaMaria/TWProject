@@ -1,99 +1,119 @@
-import React, { useState, useEffect } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import adminImage from "../assets/public/images/admin.png";
+import logo from "../assets/public/images/logo4.png";
+
 function Header() {
-  // Presupunem că datele utilizatorului sunt stocate în localStorage (poți folosi și context sau sesiune)
-  const user = JSON.parse(localStorage.getItem("user")); // Aici presupunem că stocăm informațiile utilizatorului
+  const user = JSON.parse(localStorage.getItem("user"));
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  console.log("user", user);
-  // Toggle dropdown
+
   const toggleDropdown = () => {
     setIsDropdownOpen((prevState) => !prevState);
   };
+
   const handleLogout = () => {
-    // Clear user data from localStorage
     localStorage.removeItem("user");
-
-    // Optionally clear any other related data (session, etc.)
-
-    // Redirect the user to the login page
     navigate("/login");
+    setIsDropdownOpen(false); // Închide dropdown-ul după logout
   };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsDropdownOpen(false); // Închide dropdown-ul după navigare
+  };
+
   return (
-    <header className="bg-gray-800 py-4">
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <div className="text-white font-bold text-xl">
-          <a href="/" className="hover:text-blue-400">
-            MyApp
-          </a>
+    <header className="bg-gradient-to-r from-gray-800 to-indigo-800 text-white shadow-md py-4">
+      <div className="max-w-7xl mx-auto px-6 flex items-center">
+        {/* Logo */}
+        <div className="flex items-center space-x-4">
+          <Link to="/">
+            <img src={logo} alt="Events App Logo" className="w-16 h-auto" />
+          </Link>
+          <Link to="/" className="text-2xl font-bold tracking-wide hover:text-blue-300 transition duration-300">
+            Events App
+          </Link>
         </div>
 
-        {/* If user is logged in, show profile and dropdown */}
-        {user ? (
-          <div className="ml-auto flex items-center space-x-4">
-            {/* User's profile image and name */}
+        <div className="flex-grow"></div> {/* pun mai la dr home si about */}
+
+        {/* Navigation Links */}
+        <div className="flex space-x-6">
+          <Link to="/" className="hover:text-blue-300 transition duration-300">
+            Home
+          </Link>
+          <Link to="/about" className="hover:text-blue-300 transition duration-300">
+            About
+          </Link>
+          {!user && (
+            <>
+              <Link
+                to="/login"
+                className="hover:text-blue-300 transition duration-300"
+              >
+                Login
+              </Link>
+              <Link
+                to="/sign-in"
+                className="hover:text-blue-300 transition duration-300"
+              >
+                Sign In
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* User Info / Profile */}
+        {user && (
+          <div className="ml-6 flex items-center space-x-6">
+            {/* Profile Avatar and Name */}
             <div
-              className="flex items-center space-x-2 cursor-pointer"
+              className="flex items-center space-x-2 cursor-pointer relative"
               onClick={toggleDropdown}
             >
               <img
                 src={adminImage}
                 alt="User Avatar"
-                className="w-10 h-10 rounded-full"
+                className="w-10 h-10 rounded-full border-2 border-white"
               />
-              <span className="text-white">{user.name}</span>
+              <span className="text-lg font-medium">{user.name}</span>
             </div>
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-6 mt-2 w-48 bg-white rounded-lg shadow-lg">
+              <div className="absolute right-6 top-16 bg-white text-gray-700 rounded-lg shadow-lg w-48">
                 <div className="py-2">
-                  <Link
-                    to="/"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-200"
+                  <button
+                    onClick={() => handleNavigation("/")}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
                   >
                     Home
-                  </Link>
+                  </button>
                   {user.role === "ORGANIZATOR" ? (
-                    <Link
-                      to="/organizer/dashboard"
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-200"
+                    <button
+                      onClick={() => handleNavigation("/organizer/dashboard")}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
                     >
                       Dashboard (Organizer)
-                    </Link>
+                    </button>
                   ) : (
-                    <Link
-                      to="/user-dashboard"
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-200"
+                    <button
+                      onClick={() => handleNavigation("/user/dashboard")}
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
                     >
                       Dashboard (User)
-                    </Link>
+                    </button>
                   )}
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition"
                   >
                     Logout
                   </button>
                 </div>
               </div>
             )}
-          </div>
-        ) : (
-          <div className="ml-auto space-x-4">
-            <Link
-              to="/login"
-              className="inline-block px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-700 hover:text-white transition duration-300"
-            >
-              Login
-            </Link>
-            <Link
-              to="/sign-in"
-              className="inline-block px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-700 hover:text-white transition duration-300"
-            >
-              Sign In
-            </Link>
           </div>
         )}
       </div>

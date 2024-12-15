@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import AddEventForm from "./AddEventForm";
+import AddEventForm from "./EventForms/AddEventForm";
 
 function EventGroupList() {
   const [groups, setGroups] = useState([]);

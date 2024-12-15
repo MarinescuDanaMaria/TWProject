@@ -7,16 +7,18 @@ import {
 } from "react-router-dom";
 import Home from "./components/Home";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
+import About from "./components/About";
 import SignInForm from "./components/SignInForm";
 import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/User/UserDashboard";
 import OrganizerDashboard from "./components/Organizator/OrganizatorDashboard";
-import AddEventForm from "./components/AddEventForm";
+import AddEventForm from "./components//Organizator/EventForms/AddEventForm";
 import EventList from "./components/Organizator/EventList";
-import AddEventGroupForm from "./components/AddEventGroupForm";
+import AddEventGroupForm from "./components/Organizator/EventForms/AddEventGroupForm";
 import EventGroupDetails from "./components/Organizator/EventGroupDetails";
 import EventDetails from "./components/Organizator/EventDetails";
-import EditEventForm from "./components/EditEventForm";
+import EditEventForm from "./components/Organizator/EventForms/EditEventForm";
 import WebEventDetails from "./components/WebEventDetails";
 
 function App() {
@@ -33,49 +35,95 @@ function App() {
 
   return (
     <Router>
-      <div>
-        <Header />
-        <h1>My React App</h1>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/sign-in" element={<SignInForm />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route
-            path="/user/dashboard"
-            element={user && user.role === "USER" ? <UserDashboard /> : null}
-          />
-          <Route
-            path="/organizer/dashboard"
-            element={
-              user && user.role === "ORGANIZATOR" ? (
-                <OrganizerDashboard />
-              ) : null
-            }
-          />
-          <Route
-            path="/organizer/add-event/:groupId"
-            element={<AddEventForm />}
-          />
-          <Route
-            path="/organizer/addEventGroup"
-            element={
-              user && user.role === "ORGANIZATOR" ? <AddEventGroupForm /> : null
-            }
-          />
-          {/* <Route
-            path="/organizer/events"
-            element={user && user.role === "ORGANIZATOR" ? <EventList /> : null}
-          /> */}
-          <Route
-            path="/organizer/event-group/:id"
-            element={<EventGroupDetails />}
-          />
-           <Route path="/event-web/:id" element={<WebEventDetails/>} />
-          <Route path="/event/:id" element={<EventDetails />} />
-          <Route path="organizer/edit/event/:id" element={<EditEventForm />} />
-        </Routes>
-      </div>
-    </Router>
+  <div className="flex flex-col min-h-screen">
+    {/* Header */}
+    <Header />
+
+    {/* Main Content */}
+    <main className="flex-grow">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/sign-in" element={<SignInForm />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route
+          path="/user/dashboard"
+          element={user && user.role === "USER" ? <UserDashboard /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/organizer/dashboard"
+          element={
+            user && user.role === "ORGANIZATOR" ? (
+              <OrganizerDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route path="/organizer/add-event/:groupId" element={<AddEventForm />} />
+        <Route
+          path="/organizer/addEventGroup"
+          element={
+            user && user.role === "ORGANIZATOR" ? <AddEventGroupForm /> : <Navigate to="/login" />
+          }
+        />
+        <Route path="/organizer/event-group/:id" element={<EventGroupDetails />} />
+        <Route path="/event-web/:id" element={<WebEventDetails />} />
+        <Route path="/event/:id" element={<EventDetails />} />
+        <Route path="organizer/edit/event/:id" element={<EditEventForm />} />
+      </Routes>
+    </main>
+
+    {/* Footer */}
+    <Footer />
+  </div>
+</Router>
+
+    // <Router>
+    //   <div>
+    //     <Header />
+    //     <h1>My React App</h1>
+    //     <Routes>
+    //       <Route path="/" element={<Home />} />
+    //       <Route path="/sign-in" element={<SignInForm />} />
+    //       <Route path="/login" element={<LoginForm />} />
+    //       <Route
+    //         path="/user/dashboard"
+    //         element={user && user.role === "USER" ? <UserDashboard /> : null}
+    //       />
+    //       <Route
+    //         path="/organizer/dashboard"
+    //         element={
+    //           user && user.role === "ORGANIZATOR" ? (
+    //             <OrganizerDashboard />
+    //           ) : null
+    //         }
+    //       />
+    //       <Route
+    //         path="/organizer/add-event/:groupId"
+    //         element={<AddEventForm />}
+    //       />
+    //       <Route
+    //         path="/organizer/addEventGroup"
+    //         element={
+    //           user && user.role === "ORGANIZATOR" ? <AddEventGroupForm /> : null
+    //         }
+    //       />
+    //       {/* <Route
+    //         path="/organizer/events"
+    //         element={user && user.role === "ORGANIZATOR" ? <EventList /> : null}
+    //       /> */}
+    //       <Route
+    //         path="/organizer/event-group/:id"
+    //         element={<EventGroupDetails />}
+    //       />
+    //        <Route path="/event-web/:id" element={<WebEventDetails/>} />
+    //       <Route path="/event/:id" element={<EventDetails />} />
+    //       <Route path="organizer/edit/event/:id" element={<EditEventForm />} />
+    //     </Routes>
+    //     <Footer/>
+    //   </div>
+    // </Router>
   );
 }
 

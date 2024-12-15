@@ -4,14 +4,13 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
 const {
   addEvent,
-  getEvents,
   getEventDetails,
   getEventsByGroup,
   showEvent,
   deleteEvent,
   updateEvent,
 } = require("../controllers/eventController");
-const { addEventGroup } = require("../controllers/eventGroupController");
+const { addEventGroup, getEventGroupsGroupedByUser } = require("../controllers/eventGroupController");
 const { getGroupEvents } = require("../controllers/eventGroupController");
 
 router.get(
@@ -26,7 +25,6 @@ router.get(
   }
 );
 //Events Routes
-router.get("/events", authMiddleware, roleMiddleware("ORGANIZATOR"), getEvents);
 router.get("/event/:id", getEventDetails);
 router.get("/group/:id/events", getEventsByGroup);
 //router.get("/event/:id", showEvent);
@@ -45,6 +43,12 @@ router.get(
   authMiddleware,
   roleMiddleware("ORGANIZATOR"),
   getGroupEvents
+);
+router.get(
+  "/event-groups/grouped-by-organizer",
+  authMiddleware,
+  roleMiddleware("ORGANIZATOR"),
+  getEventGroupsGroupedByUser
 );
 router.post(
   "/add/event-groups",
