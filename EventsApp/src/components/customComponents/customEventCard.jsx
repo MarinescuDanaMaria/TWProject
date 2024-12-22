@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import EditEventForm from "../Organizator/EventForms/EditEventForm";
 
+import moment from "moment-timezone";
+
+
 const CustomEventCard = ({ event, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -16,7 +19,8 @@ const CustomEventCard = ({ event, onDelete, onUpdate }) => {
   return (
     <div className="p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white">
       <h2 className="text-xl font-semibold mb-2">{event.name}</h2>
-      <p className="text-gray-600">Start Data: {event.startTime}</p>
+      <p className="text-gray-600">Start Data: {moment(event.startTime).tz("Europe/Bucharest").format("YYYY-MM-DD HH:mm")}</p>
+
       <div className="flex justify-between items-center mt-4">
         {/* Dacă nu suntem în modul de editare, arătăm butoanele */}
         {!isEditing ? (
