@@ -1,74 +1,164 @@
-const { Event } = require("../models"); 
+const { Event, EventGroup, QrCode } = require("../models");
+const QRCode = require("qrcode");
+const path = require("path");
+const fs = require("fs");
 
-// controller pt obt lista even
-// exports.getEvents = async (req, res) => {
-//   try {
-//     const events = await Event.findAll({
-//       where: { organizerId: req.user.id },
-//     });
-//     res.json({ events });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Eroare la obținerea listei de evenimente!" });
-//   }
-// };
-
-const updateEventStatus = (event) => {
-  const now = new Date();
-  if (event.startTime <= now && event.endTime >= now) {
-    event.status = "OPEN";
-  } else {
-    event.status = "CLOSED";
-  }
-  return event;
-};
-
-exports.getEvents = async (req, res) => {
-  try {
-    // Obține toate evenimentele pentru un grup specific
-    const events = await Event.findAll({ where: { idGroup: req.params.groupId } });
-
-    // Actualizează statusul fiecărui eveniment
-    const updatedEvents = events.map(updateEventStatus);
-
-    // Trimite răspunsul sub forma unui JSON cu cheia `events`
-    res.status(200).json({ events: updatedEvents });
-  } catch (error) {
-    console.error("Eroare la obținerea evenimentelor:", error);
-    res.status(500).json({ error: "Eroare la obținerea evenimentelor." });
-  }
-};
-
-
-// controller pt ad even
 exports.addEvent = async (req, res) => {
   try {
-    const { name, description, status, startTime, endTime, idGroup } = req.body;
+    const { name, description, startTime, endTime } = req.body;
+    const { groupId } = req.params;
 
-//////////
-    console.log("Date primite de la client:", req.body);
-    console.log("Utilizator autentificat:", req.user);
-
-    ///////
-    if (!name || !description || !startTime || !idGroup) {
-      return res.status(400).json({ error: "Toate câmpurile obligatorii trebuie completate!" });
+    if (!name || !description || !startTime || !groupId) {
+      return res
+        .status(400)
+        .json({ error: "Toate câmpurile obligatorii trebuie completate!" });
     }
 
-    const event = await Event.create({
+    const group = await EventGroup.findByPk(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Grupul nu a fost găsit!" });
+    }
+
+    let event = await Event.create({
       name,
       description,
-      status,
       startTime,
       endTime,
-      idGroup,
+      idGroup: groupId,
       organizerId: req.user.id,
     });
+
+    const imagesDir = path.join(__dirname, "../images");
+    if (!fs.existsSync(imagesDir)) {
+      fs.mkdirSync(imagesDir);
+    }
+    const eventUrl = `http://localhost:8081/event/${event.id}`;
+    const imagePath = path.join(__dirname, "../images", `${event.id}.png`);
+
+    await QRCode.toFile(imagePath, eventUrl, { type: "png" });
+
+    await QrCode.create({
+      event_id: event.id,
+      qr_code: eventUrl,
+      image_url: `/images/${event.id}.png`,
+    });
+
+    await event.save();
 
     res.status(201).json({ message: "Eveniment creat cu succes!", event });
   } catch (error) {
     console.error(error);
-    /// modif
-    res.status(500).json({ error: "Eroare la crearea evenimentului: ",error });
+    res
+      .status(500)
+      .json({ error: "Eroare la crearea evenimentului", details: error });
   }
 };
 
+exports.getEventDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const event = await Event.findByPk(id);
+
+    if (!event) {
+      return res.status(404).json({ error: "Evenimentul nu a fost găsit!" });
+    }
+
+    res.status(200).json(event);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Eroare la obținerea detaliilor evenimentului!" });
+  }
+};
+exports.getEventsByGroup = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const events = await Event.findAll({
+      where: { idGroup: id },
+    });
+
+    if (!events.length) {
+      return res
+        .status(404)
+        .json({ error: "Nu au fost găsite evenimente pentru acest grup!" });
+    }
+
+    res.status(200).json(events);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Eroare la obținerea evenimentelor!" });
+  }
+};
+exports.showEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const event = await Event.findByPk(id);
+
+    if (!event) {
+      return res.status(404).json({ error: "Evenimentul nu a fost găsit!" });
+    }
+
+    res.status(200).json(event);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Eroare la obținerea detaliilor evenimentului!" });
+  }
+};
+
+exports.deleteEvent = async (req, res) => {
+  try {
+    const { id } = req.params; 
+
+    const event = await Event.findByPk(id);
+    if (!event) {
+      return res.status(404).json({ error: "Evenimentul nu a fost găsit!" });
+    }
+
+    const qrCode = await QrCode.findOne({ where: { event_id: id } });
+    if (qrCode) {
+      const imagePath = path.join(__dirname, "..", qrCode.image_url);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath); 
+      }
+      await qrCode.destroy();
+    }
+
+    await event.destroy();
+
+    res.status(200).json({ message: "Evenimentul a fost șters cu succes!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Eroare la ștergerea evenimentului!" });
+  }
+};
+
+exports.updateEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description, startTime, endTime } = req.body;
+
+    const event = await Event.findByPk(id);
+
+    if (!event) {
+      return res.status(404).json({ error: "Evenimentul nu a fost găsit!" });
+    }
+
+    event.name = name || event.name;
+    event.description = description || event.description;
+    event.startTime = startTime || event.startTime;
+    event.endTime = endTime || event.endTime;
+
+    await event.save();
+
+    res.status(200).json({ message: "Eveniment actualizat cu succes!", event });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Eroare la actualizarea evenimentului." });
+  }
+};

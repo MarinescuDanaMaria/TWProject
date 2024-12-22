@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-//const sequelize = require("../config/sequelize");
+const sequelize = require("../config/sequelize");
 const Role = require("./role"); // se importa modelul pt a config relatia 
 const EventGroup = require("./EventGroup"); 
 //const db= require("../models");

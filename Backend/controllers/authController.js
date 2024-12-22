@@ -96,7 +96,7 @@ async function logIn(req, res) { // extrage datele din cererea HTTP printr-o cer
     }
 
     const token = jwt.sign( // genereaza un token JWT care contine id,email,rol
-      { userId: user.id, email: user.email, role: user.role.name },
+      { userId: user.id, email: user.email, role: user.role.name , name:`${user.first_name} ${user.last_name}`},
       process.env.JWT_SECRET // fol cheia privata din variabila de mediu jwt_secret 
     );
     // bazat pe acest token, unde verif autenticitatea id,email,rol , se garanteaza accesul sau nu 

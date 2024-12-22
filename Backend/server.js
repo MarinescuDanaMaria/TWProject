@@ -1,17 +1,20 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path"); 
 const sequelize = require("./config/sequelize");
 const User = require("./models/User");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const webRoutes = require("./routes/webRoutes");
 const organizerRoutes = require("./routes/organizerRoutes");
 const listEndpoints = require("express-list-endpoints");
 require("dotenv").config();
+//require("./utils/cronJobs");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use("/images", express.static(path.join(__dirname, "images")));
 // ruta principala de test 
 app.get("/", (req, res) => {
   return res.json("From Be");
@@ -21,6 +24,7 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/organizer", organizerRoutes);
+app.use("/",webRoutes);
 
 ///////////debug
 app.use("/auth", (req, res, next) => {
