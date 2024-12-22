@@ -3,7 +3,7 @@
 const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
+  const token = req.headers.authorization?.split(" ")[1];
   // obtine token-ul din antetul auth 
 
   //////
@@ -15,7 +15,14 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {  // verif daca e valid token-ul ( sa nu fie fals / expirat )
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // al 2 lea param = cheie secreta 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Token decodificat:", decoded); // Log pentru debugging
+    req.user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+      name: decoded.name,
+    }; // al 2 lea param = cheie secreta 
     // ezxtrage inf codif si le stocheaza in var decoded ( decod token-ul )
     req.user = decoded;  
     next();  // cererea continua daca totul e valid

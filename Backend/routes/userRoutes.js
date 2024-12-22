@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
+const { addParticipant, isParticipant, confirmParticipant } = require("../controllers/participantController");
 
 router.get("/dashboard", authMiddleware, roleMiddleware("user"), (req, res) => {
   res.json({
@@ -9,6 +10,14 @@ router.get("/dashboard", authMiddleware, roleMiddleware("user"), (req, res) => {
     user: req.user,
   });
 });
+// Ruta pentru adăugarea utilizatorului la eveniment
+router.post("/join-event/:eventId", authMiddleware,roleMiddleware("user"), addParticipant);
+
+// Rută pentru verificarea participării
+router.get("/is-participant/:eventId", authMiddleware, isParticipant);
+
+// Route for confirming participation
+router.post("/confirm-participation/:eventId", authMiddleware, confirmParticipant);
 
 // router.get("/user/profile", authMiddleware, roleMiddleware("user"), (req, res) => {
 //   res.json({

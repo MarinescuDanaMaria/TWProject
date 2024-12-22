@@ -14,7 +14,7 @@ import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/User/UserDashboard";
 import OrganizerDashboard from "./components/Organizator/OrganizatorDashboard";
 import AddEventForm from "./components//Organizator/EventForms/AddEventForm";
-import EventList from "./components/Organizator/EventList";
+//import EventList from "./components/Organizator/EventList";
 import AddEventGroupForm from "./components/Organizator/EventForms/AddEventGroupForm";
 import EventGroupDetails from "./components/Organizator/EventGroupDetails";
 import EventDetails from "./components/Organizator/EventDetails";
