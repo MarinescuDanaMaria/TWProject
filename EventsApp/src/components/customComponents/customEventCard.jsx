@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import EditEventForm from "../Organizator/EventForms/EditEventForm";
-
+import { useNavigate } from "react-router-dom";
 import moment from "moment-timezone";
-
 
 const CustomEventCard = ({ event, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
-
+  const navigate = useNavigate();
   const handleEditClick = () => {
     setIsEditing(true); // Schimbă starea pentru a deschide formularul de editare
   };
@@ -15,11 +14,20 @@ const CustomEventCard = ({ event, onDelete, onUpdate }) => {
   const handleCloseForm = () => {
     setIsEditing(false); // Închide formularul de editare
   };
+  const handleViewDetails = () => {
+    // Navigate to the event details page for this group and event
+    navigate(`/group/${event.idGroup}/event/${event.id}`);
+  };
 
   return (
     <div className="p-4 border rounded-lg shadow-md hover:shadow-lg transition-shadow bg-white">
       <h2 className="text-xl font-semibold mb-2">{event.name}</h2>
-      <p className="text-gray-600">Start Data: {moment(event.startTime).tz("Europe/Bucharest").format("YYYY-MM-DD HH:mm")}</p>
+      <p className="text-gray-600">
+        Start Data:{" "}
+        {moment(event.startTime)
+          .tz("Europe/Bucharest")
+          .format("YYYY-MM-DD HH:mm")}
+      </p>
 
       <div className="flex justify-between items-center mt-4">
         {/* Dacă nu suntem în modul de editare, arătăm butoanele */}
@@ -27,7 +35,7 @@ const CustomEventCard = ({ event, onDelete, onUpdate }) => {
           <>
             <button
               className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-              onClick={() => alert('Vezi detalii') /* Logica pentru detalii */}
+              onClick={handleViewDetails}
             >
               Vezi detalii
             </button>

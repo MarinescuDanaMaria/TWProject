@@ -53,6 +53,8 @@ const User = sequelize.define(
 User.associate = (models) => {
   User.hasMany(models.EventGroup, { foreignKey: "idUser", as: "groups" });
   User.belongsTo(models.Role, { foreignKey: 'role_id', as: 'role' });
+  User.hasMany(models.Participant, { foreignKey: "user_id", as: "participants" });
+
 };
 
 return User;

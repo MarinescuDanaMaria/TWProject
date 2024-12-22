@@ -9,6 +9,7 @@ const {
   showEvent,
   deleteEvent,
   updateEvent,
+  getEventDetailsForOrganizer,
 } = require("../controllers/eventController");
 const { addEventGroup, getEventGroupsGroupedByUser } = require("../controllers/eventGroupController");
 const { getGroupEvents } = require("../controllers/eventGroupController");
@@ -56,4 +57,18 @@ router.post(
   roleMiddleware("ORGANIZATOR"),
   addEventGroup
 );
+
+router.get("/group/:idGroup/event/:idEvent", authMiddleware,  roleMiddleware("ORGANIZATOR"), getEventDetailsForOrganizer);
+
+//participants 
+const {
+  getParticipantsByEvent,
+  exportParticipantsCSV,
+  exportParticipantsPDF,
+} = require("../controllers/participantController");
+
+router.get("/event/:eventId/participants", authMiddleware,  roleMiddleware("ORGANIZATOR"), getParticipantsByEvent);
+router.get("/event/:eventId/participants/csv", authMiddleware, roleMiddleware("ORGANIZATOR"), exportParticipantsCSV);
+router.get("/event/:eventId/participants/pdf", authMiddleware, roleMiddleware("ORGANIZATOR"), exportParticipantsPDF);
+
 module.exports = router;

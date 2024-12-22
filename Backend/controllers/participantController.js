@@ -1,5 +1,6 @@
 const { Participant, Event, User } = require("../models");
 
+
 exports.addParticipant = async (req, res) => {
   try {
     console.log("User din req:", req.user);
@@ -104,3 +105,140 @@ exports.isParticipant = async (req, res) => {
       res.status(500).json({ error: "An error occurred while confirming participation." });
     }
   };
+  exports.getParticipantsByEvent = async (req, res) => {
+    try {
+      const { eventId } = req.params;
+  
+      const participants = await Participant.findAll({
+        where: { event_id: eventId },
+        include: [
+          {
+            model: User,
+            as: "user", // Aliasul definit în relație
+            attributes: ["id", "email", "first_name","last_name"], // Afișează informațiile relevante despre utilizator
+          },
+        ],
+      });
+  
+      if (!participants.length) {
+        return res
+          .status(404)
+          .json({ error: "Nu există participanți la acest eveniment." });
+      }
+  
+      res.status(200).json(participants);
+    } catch (error) {
+      console.error("Eroare la obținerea participanților:", error);
+      res.status(500).json({ error: "Eroare la obținerea participanților." });
+    }
+  };
+  
+  const { Parser } = require("json2csv");
+
+  exports.exportParticipantsCSV = async (req, res) => {
+    try {
+      const { eventId } = req.params;
+  
+      const participants = await Participant.findAll({
+        where: { event_id: eventId },
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "email", "first_name", "last_name"],
+          },
+        ],
+      });
+  
+      if (!participants.length) {
+        return res.status(404).json({ error: "Nu există participanți la acest eveniment." });
+      }
+  
+      // Mapăm datele pentru CSV
+      const csvData = participants.map((p) => ({
+        ID: p.user.id,
+        Email: p.user.email,
+        Name: `${p.user.first_name} ${p.user.last_name}`,
+        Confirmed: p.confirmed ? "Yes" : "No",
+        "Confirmation Date": p.confirmed_at || "Not Confirmed",
+      }));
+  
+      const json2csvParser = new Parser();
+      const csv = json2csvParser.parse(csvData);
+  
+      res.header("Content-Type", "text/csv");
+      res.attachment(`participants_event_${eventId}.csv`);
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error("Eroare la exportarea CSV:", error);
+      res.status(500).json({ error: "Eroare la exportarea participanților în CSV." });
+    }
+  };
+  const PDFDocument = require("pdfkit");
+
+  exports.exportParticipantsPDF = async (req, res) => {
+    try {
+      const { eventId } = req.params;
+  
+      // Obține detalii despre eveniment
+      const event = await Event.findByPk(eventId, {
+        attributes: ["name", "description", "startTime", "endTime"],
+      });
+  
+      if (!event) {
+        return res.status(404).json({ error: "Evenimentul nu a fost găsit." });
+      }
+  
+      // Obține participanți
+      const participants = await Participant.findAll({
+        where: { event_id: eventId },
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "email", "first_name", "last_name"],
+          },
+        ],
+      });
+  
+      if (!participants.length) {
+        return res.status(404).json({ error: "Nu există participanți la acest eveniment." });
+      }
+  
+      const doc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=participants_event_${event.name.replace(/\s+/g, "_")}.pdf`
+      );
+  
+      doc.pipe(res);
+  
+      // Adaugă informațiile despre eveniment
+      doc.fontSize(18).text(`Event: ${event.name}`, { align: "center" });
+      doc.moveDown();
+      doc.fontSize(14).text(`Description: ${event.description}`);
+      doc.text(`Start Time: ${new Date(event.startTime).toLocaleString()}`);
+      doc.text(`End Time: ${new Date(event.endTime).toLocaleString()}`);
+      doc.moveDown();
+  
+      doc.fontSize(16).text("Participants:", { underline: true });
+      doc.moveDown();
+  
+      // Adaugă lista participanților
+      participants.forEach((p, index) => {
+        doc.fontSize(12).text(
+          `${index + 1}. ${p.user.first_name} ${p.user.last_name} | Email: ${p.user.email} | Confirmed: ${
+            p.confirmed ? "Yes" : "No"
+          } | Confirmation Date: ${p.confirmed_at || "Not Confirmed"}`
+        );
+        doc.moveDown();
+      });
+  
+      doc.end();
+    } catch (error) {
+      console.error("Eroare la exportarea PDF:", error);
+      res.status(500).json({ error: "Eroare la exportarea participanților în PDF." });
+    }
+  };
+  
