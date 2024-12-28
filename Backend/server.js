@@ -9,7 +9,7 @@ const webRoutes = require("./routes/webRoutes");
 const organizerRoutes = require("./routes/organizerRoutes");
 const listEndpoints = require("express-list-endpoints");
 require("dotenv").config();
-//require("./utils/cronJobs");
+require("./utils/cronJobs");
 
 const app = express();
 app.use(cors());

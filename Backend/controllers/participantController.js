@@ -1,4 +1,5 @@
-const { Participant, Event, User } = require("../models");
+const { Participant, Event, User, EventGroup } = require("../models");
+const { Parser } = require("json2csv");
 
 
 exports.addParticipant = async (req, res) => {
@@ -133,8 +134,6 @@ exports.isParticipant = async (req, res) => {
     }
   };
   
-  const { Parser } = require("json2csv");
-
   exports.exportParticipantsCSV = async (req, res) => {
     try {
       const { eventId } = req.params;
@@ -239,6 +238,69 @@ exports.isParticipant = async (req, res) => {
     } catch (error) {
       console.error("Eroare la exportarea PDF:", error);
       res.status(500).json({ error: "Eroare la exportarea participanților în PDF." });
+    }
+  };
+
+
+  exports.exportGroupParticipantsCSV = async (req, res) => {
+    try {
+      const { groupId } = req.params;
+  
+      // Găsește toate evenimentele asociate grupului
+      const events = await Event.findAll({
+        where: { idGroup: groupId },
+        attributes: ["id", "name"], // Extrage doar ID-ul și numele evenimentului
+      });
+  
+      if (!events.length) {
+        return res.status(404).json({ error: "Nu există evenimente în acest grup." });
+      }
+  
+      const eventIds = events.map((event) => event.id);
+  
+      // Obține participanții pentru toate evenimentele din grup
+      const participants = await Participant.findAll({
+        where: { event_id: eventIds },
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "email", "first_name", "last_name"],
+          },
+          {
+            model: Event,
+            as: "event",
+            attributes: ["name"], // Extrage numele evenimentului
+          },
+        ],
+      });
+  
+      if (!participants.length) {
+        return res.status(404).json({ error: "Nu există participanți în acest grup." });
+      }
+  
+      // Mapăm datele pentru CSV
+      const csvData = participants.map((p) => ({
+        ID: p.user.id,
+        Email: p.user.email,
+        Name: `${p.user.first_name} ${p.user.last_name}`,
+        Event: p.event.name, // Adaugă numele evenimentului
+        Confirmed: p.confirmed ? "Yes" : "No",
+        "Confirmation Date": p.confirmed_at || "Not Confirmed",
+      }));
+  
+      // Generăm CSV-ul
+      const json2csvParser = new Parser();
+      const csv = json2csvParser.parse(csvData);
+      
+  
+      // Răspuns cu fișierul CSV
+      res.header("Content-Type", "text/csv");
+      res.attachment(`group_${groupId}_participants.csv`);
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error("Eroare la exportarea CSV pentru grup:", error);
+      res.status(500).json({ error: "Eroare la exportarea participanților în CSV." });
     }
   };
   

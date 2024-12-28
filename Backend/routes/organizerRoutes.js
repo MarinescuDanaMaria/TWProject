@@ -10,6 +10,7 @@ const {
   deleteEvent,
   updateEvent,
   getEventDetailsForOrganizer,
+  getEventStats
 } = require("../controllers/eventController");
 const { addEventGroup, getEventGroupsGroupedByUser } = require("../controllers/eventGroupController");
 const { getGroupEvents } = require("../controllers/eventGroupController");
@@ -65,10 +66,15 @@ const {
   getParticipantsByEvent,
   exportParticipantsCSV,
   exportParticipantsPDF,
+  exportGroupParticipantsCSV
 } = require("../controllers/participantController");
 
 router.get("/event/:eventId/participants", authMiddleware,  roleMiddleware("ORGANIZATOR"), getParticipantsByEvent);
 router.get("/event/:eventId/participants/csv", authMiddleware, roleMiddleware("ORGANIZATOR"), exportParticipantsCSV);
 router.get("/event/:eventId/participants/pdf", authMiddleware, roleMiddleware("ORGANIZATOR"), exportParticipantsPDF);
+
+router.get("/export/group/:groupId/participants/csv", exportGroupParticipantsCSV);
+
+router.get("/event-stats", authMiddleware, roleMiddleware("ORGANIZATOR"), getEventStats);
 
 module.exports = router;

@@ -46,6 +46,7 @@ const ParticipantsTable = ({ eventId }) => {
             <th className="border border-gray-200 px-4 py-2">Name</th>
             <th className="border border-gray-200 px-4 py-2">Email</th>
             <th className="border border-gray-200 px-4 py-2">Confirmed</th>
+            <th className="border border-gray-200 px-4 py-2">Confirmed At</th>
           </tr>
         </thead>
         <tbody>
@@ -56,6 +57,11 @@ const ParticipantsTable = ({ eventId }) => {
               <td className="border border-gray-200 px-4 py-2">{participant.user.email}</td>
               <td className="border border-gray-200 px-4 py-2">
                 {participant.confirmed ? "Yes" : "No"}
+              </td>
+              <td className="border border-gray-200 px-4 py-2">
+                {participant.confirmed_at
+                ? new Date(participant.confirmed_at).toLocaleString()
+                : "Not confirmed"}
               </td>
             </tr>
           ))}

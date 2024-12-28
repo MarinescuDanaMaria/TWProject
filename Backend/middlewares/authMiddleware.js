@@ -7,7 +7,7 @@ const authMiddleware = (req, res, next) => {
   // obtine token-ul din antetul auth 
 
   //////
-///console.log("Utilizator autentificat:", req.user);
+  console.log("Utilizator autentificat:", req.user);
 /////////
 
   if (!token) { // verif daca token-ul exista 
@@ -24,6 +24,7 @@ const authMiddleware = (req, res, next) => {
       name: decoded.name,
     }; // al 2 lea param = cheie secreta 
     // ezxtrage inf codif si le stocheaza in var decoded ( decod token-ul )
+    
     req.user = decoded;  
     next();  // cererea continua daca totul e valid
   } catch (error) {

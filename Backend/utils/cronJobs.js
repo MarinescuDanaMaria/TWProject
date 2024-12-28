@@ -1,21 +1,6 @@
 const cron = require("node-cron");
 const { Event } = require("../models");
 
-// const updateEventStatus = (event) => {
-//   const now = new Date();
-//  // console.log("Verif : ".now);
-//   console.log("Timpul curent:", now);
-//   console.log("startTime:", event.startTime);
-//   console.log("endTime:", event.endTime);
-
-//   if (event.startTime <= now && event.endTime >= now) {
-//     event.status = "OPEN";
-//   } else {
-//     event.status = "CLOSED";
-//   }
-//   return event;
-// };
-
 const moment = require("moment-timezone");
 
 const updateEventStatus = (event) => {

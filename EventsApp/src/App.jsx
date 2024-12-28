@@ -14,7 +14,6 @@ import LoginForm from "./components/LoginForm";
 import UserDashboard from "./components/User/UserDashboard";
 import OrganizerDashboard from "./components/Organizator/OrganizatorDashboard";
 import AddEventForm from "./components//Organizator/EventForms/AddEventForm";
-//import EventList from "./components/Organizator/EventList";
 import AddEventGroupForm from "./components/Organizator/EventForms/AddEventGroupForm";
 import EventGroupDetails from "./components/Organizator/EventGroupDetails";
 import EventDetails from "./components/Organizator/EventDetails";
@@ -80,52 +79,6 @@ function App() {
     <Footer />
   </div>
 </Router>
-
-    // <Router>
-    //   <div>
-    //     <Header />
-    //     <h1>My React App</h1>
-    //     <Routes>
-    //       <Route path="/" element={<Home />} />
-    //       <Route path="/sign-in" element={<SignInForm />} />
-    //       <Route path="/login" element={<LoginForm />} />
-    //       <Route
-    //         path="/user/dashboard"
-    //         element={user && user.role === "USER" ? <UserDashboard /> : null}
-    //       />
-    //       <Route
-    //         path="/organizer/dashboard"
-    //         element={
-    //           user && user.role === "ORGANIZATOR" ? (
-    //             <OrganizerDashboard />
-    //           ) : null
-    //         }
-    //       />
-    //       <Route
-    //         path="/organizer/add-event/:groupId"
-    //         element={<AddEventForm />}
-    //       />
-    //       <Route
-    //         path="/organizer/addEventGroup"
-    //         element={
-    //           user && user.role === "ORGANIZATOR" ? <AddEventGroupForm /> : null
-    //         }
-    //       />
-    //       {/* <Route
-    //         path="/organizer/events"
-    //         element={user && user.role === "ORGANIZATOR" ? <EventList /> : null}
-    //       /> */}
-    //       <Route
-    //         path="/organizer/event-group/:id"
-    //         element={<EventGroupDetails />}
-    //       />
-    //        <Route path="/event-web/:id" element={<WebEventDetails/>} />
-    //       <Route path="/event/:id" element={<EventDetails />} />
-    //       <Route path="organizer/edit/event/:id" element={<EditEventForm />} />
-    //     </Routes>
-    //     <Footer/>
-    //   </div>
-    // </Router>
   );
 }
 
