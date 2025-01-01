@@ -5,18 +5,14 @@ const moment = require("moment-timezone");
 
 const updateEventStatus = (event) => {
   const now = moment().tz("Europe/Bucharest");
-  const startTime = moment(event.startTime).tz("Europe/Bucharest");
-  const endTime = moment(event.endTime).tz("Europe/Bucharest");
-
-  console.log("Timpul curent:", now.format());
-  console.log("startTime:", startTime.format());
-  console.log("endTime:", endTime.format());
+  const startTime = event.startTime;
+  const endTime = event.endTime;
 
   if (startTime <= now && endTime >= now) {
     event.status = "OPEN";
-  } else {
+  } else if (endTime < now) {
     event.status = "CLOSED";
-  }
+  } 
   return event;
 };
 

@@ -20,6 +20,7 @@ import EventDetails from "./components/Organizator/EventDetails";
 import EditEventForm from "./components/Organizator/EventForms/EditEventForm";
 import WebEventDetails from "./components/WebEventDetails";
 import EventListDetails from "./components/Organizator/EventListDetails"
+import WelcomeEventPage from "./components/User/WelcomeEventPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -72,6 +73,7 @@ function App() {
         <Route path="/event/:id" element={<EventDetails />} />
         <Route path="organizer/edit/event/:id" element={<EditEventForm />} />
         <Route path="/group/:idGroup/event/:idEvent" element={<EventListDetails />} />
+        <Route path="/welcome-event/:id" element={<WelcomeEventPage />} />
       </Routes>
     </main>
 

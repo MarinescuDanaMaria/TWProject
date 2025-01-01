@@ -53,7 +53,7 @@ const ParticipantsTable = ({ eventId }) => {
           {participants.map((participant) => (
             <tr key={participant.id}>
               <td className="border border-gray-200 px-4 py-2">{participant.id}</td>
-              <td className="border border-gray-200 px-4 py-2">{participant.user.name}</td>
+              <td className="border border-gray-200 px-4 py-2">{participant.user.first_name} {participant.user.last_name}</td>
               <td className="border border-gray-200 px-4 py-2">{participant.user.email}</td>
               <td className="border border-gray-200 px-4 py-2">
                 {participant.confirmed ? "Yes" : "No"}

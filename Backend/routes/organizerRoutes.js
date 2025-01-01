@@ -46,12 +46,12 @@ router.get(
   roleMiddleware("ORGANIZATOR"),
   getGroupEvents
 );
-router.get(
-  "/event-groups/grouped-by-organizer",
-  authMiddleware,
-  roleMiddleware("ORGANIZATOR"),
-  getEventGroupsGroupedByUser
-);
+// router.get(
+//   "/event-groups/grouped-by-organizer",
+//   authMiddleware,
+//   roleMiddleware("ORGANIZATOR"),
+//   getEventGroupsGroupedByUser
+// );
 router.post(
   "/add/event-groups",
   authMiddleware,

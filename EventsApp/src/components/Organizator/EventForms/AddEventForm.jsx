@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 function AddEventForm() {
   const { groupId } = useParams();
@@ -8,15 +8,16 @@ function AddEventForm() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (endTime && new Date(endTime) < new Date(startTime)) {
       setError("End Time nu poate fi înainte de Start Time!");
-      return; 
+      return;
     } else {
-      setError("")
+      setError("");
     }
 
     if (!name || !description || !startTime) {
@@ -29,24 +30,28 @@ function AddEventForm() {
       description,
       startTime,
       endTime,
-      groupId
+      groupId,
     };
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8081/organizer/events-group/${groupId}/add/events`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(eventData),
-      });
+      const response = await fetch(
+        `http://localhost:8081/organizer/events-group/${groupId}/add/events`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(eventData),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         alert("Evenimentul a fost adăugat cu succes!");
+        navigate(`/organizer/event-group/${groupId}`);
       } else {
         alert(`Eroare la adăugarea evenimentului: ${data.error}`);
       }
@@ -57,11 +62,15 @@ function AddEventForm() {
 
   return (
     <div className="max-w-lg mx-auto bg-white p-8 rounded-md shadow-md">
-      <h2 className="text-2xl font-semibold text-center mb-6">Adaugă Eveniment</h2>
+      <h2 className="text-2xl font-semibold text-center mb-6">
+        Adaugă Eveniment
+      </h2>
       <form onSubmit={handleSubmit}>
-
         <div className="mb-4">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
             Nume
           </label>
           <input
@@ -75,7 +84,10 @@ function AddEventForm() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700"
+          >
             Descriere
           </label>
           <textarea
@@ -88,7 +100,10 @@ function AddEventForm() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="startTime"
+            className="block text-sm font-medium text-gray-700"
+          >
             Start Time
           </label>
           <input
@@ -102,7 +117,10 @@ function AddEventForm() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="endTime"
+            className="block text-sm font-medium text-gray-700"
+          >
             End Time
           </label>
           <input
@@ -121,7 +139,10 @@ function AddEventForm() {
         )}
 
         <div className="text-center">
-          <button type="submit" className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition duration-300">
+          <button
+            type="submit"
+            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition duration-300"
+          >
             Adaugă Eveniment
           </button>
         </div>

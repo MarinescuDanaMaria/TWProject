@@ -42,6 +42,7 @@ const EditEventForm = ({ event, onClose, onUpdate }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(eventData),
+     
       });
 
       if (!response.ok) {

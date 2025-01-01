@@ -1,12 +1,13 @@
-const { EventGroup,User,Event } = require("../models");
-
+const { EventGroup, User, Event } = require("../models");
 
 exports.addEventGroup = async (req, res) => {
   try {
     const { name } = req.body;
 
     if (!name) {
-      return res.status(400).json({ error: "Numele grupului este obligatoriu!" });
+      return res
+        .status(400)
+        .json({ error: "Numele grupului este obligatoriu!" });
     }
 
     const group = await EventGroup.create({
@@ -14,11 +15,12 @@ exports.addEventGroup = async (req, res) => {
       idUser: req.user.userId,
     });
 
-
     res.status(201).json({ message: "Grup creat cu succes!", group });
   } catch (error) {
     console.error("Eroare la crearea grupului:", error);
-    res.status(500).json({ error: "Eroare la crearea grupului de evenimente." });
+    res
+      .status(500)
+      .json({ error: "Eroare la crearea grupului de evenimente." });
   }
 };
 
@@ -33,7 +35,9 @@ exports.getGroupEvents = async (req, res) => {
     res.status(200).json(groups);
   } catch (error) {
     console.error("Eroare la obținerea grupurilor de evenimente:", error);
-    res.status(500).json({ error: "Eroare la obținerea grupurilor de evenimente." });
+    res
+      .status(500)
+      .json({ error: "Eroare la obținerea grupurilor de evenimente." });
   }
 };
 
@@ -44,47 +48,83 @@ exports.getEventGroupsGroupedByUser = async (req, res) => {
       include: [
         {
           model: Event, // Incluzând evenimentele pentru fiecare grup
-          as: 'events', // Folosind aliasul definit în asocierea din modelul EventGroup
+          as: "events", // Folosind aliasul definit în asocierea din modelul EventGroup
         },
         {
           model: User, // Incluzând utilizatorul asociat cu grupul de evenimente
-          as: 'organizer', // Aliasul pentru utilizator (asigură-te că ai definit corect asocierea)
-        }
+          as: "organizer", // Aliasul pentru utilizator (asigură-te că ai definit corect asocierea)
+        },
       ],
     });
 
     // Dacă nu găsim niciun grup de evenimente
     if (!eventGroups.length) {
-      return res.status(404).json({ error: "Nu au fost găsite grupuri de evenimente!" });
+      return res
+        .status(404)
+        .json({ error: "Nu au fost găsite grupuri de evenimente!" });
     }
 
-    // Grupăm evenimentele în funcție de utilizator
-    const groupedByUser = eventGroups.reduce((acc, group) => {
-      // Verificăm dacă organizerul există înainte de a accesa 'id'
-      if (group.organizer && group.organizer.id) {
-        const userId = group.organizer.id; // Folosim id-ul organizatorului
+    eventGroups.forEach((group) => {
+      console.log(
+        "Before filtering:",
+        group.events.map((event) => event.status)
+      );
+      group.events = group.events.filter(
+        (event) =>
+          event.status &&
+          (event.status === "OPEN" || event.status === "SCHEDULED")
+      );
+      console.log(
+        "After filtering:",
+        group.events.map((event) => event.status)
+      );
+    });
 
-        // Dacă nu există deja un grup pentru utilizatorul respectiv, îl adăugăm
+    // Eliminăm grupurile care nu mai au evenimente după filtrare
+    const filteredEventGroups = eventGroups.filter(
+      (group) => group.events.length > 0
+    );
+
+    filteredEventGroups.forEach((group) => {
+      console.log(
+        "After filtering: ---> filteredEventGroups",
+        group.events.map((event) => event.status)
+      );
+    });
+
+    const groupedByUser = filteredEventGroups.reduce((acc, group) => {
+      // Check if the organizer exists
+      if (group.organizer && group.organizer.id) {
+        const userId = group.organizer.id; // Use the organizer's ID
+
+        // If the user doesn't exist in the accumulator, add them
         if (!acc[userId]) {
           acc[userId] = {
-            user: group.organizer, // Organizatorul
-            eventGroups: [] // Lista de grupuri de evenimente
+            user: group.organizer, // Organizer details
+            eventGroups: [], // List of event groups
           };
         }
 
-        // Adăugăm grupul de evenimente la utilizatorul corespunzător
-        acc[userId].eventGroups.push(group);
+        // Convert the group and its events to plain objects before adding
+        const plainGroup = {
+          ...group.toJSON(), // Convert the group model to a plain object
+          events: group.events.map((event) => event.toJSON()), // Convert events to plain objects
+        };
+
+        // Add the plain group to the organizer
+        acc[userId].eventGroups.push(plainGroup);
       } else {
-        console.log("Missing organizer for group:", group); // Log pentru grupuri care nu au organizer
+        console.log("Missing organizer for group:", group); // Log groups with missing organizers
       }
 
       return acc;
     }, {});
 
-    // Răspuns cu datele grupate
-    res.status(200).json(Object.values(groupedByUser)); // Returnăm un array din obiectul grupat
+    res.status(200).json(Object.values(groupedByUser));
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Eroare la obținerea grupurilor de evenimente!" });
+    res
+      .status(500)
+      .json({ error: "Eroare la obținerea grupurilor de evenimente!" });
   }
 };

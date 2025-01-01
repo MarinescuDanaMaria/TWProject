@@ -7,25 +7,25 @@ const EventGroupDetails = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [messageEventsNotFound, setMessageEventsNotFound] = useState(null);
 
   // Funcția de încărcare a evenimentelor
   const fetchEvents = async () => {
     try {
-      const response = await fetch(`http://localhost:8081/organizer/group/${id}/events`);
+      const response = await fetch(
+        `http://localhost:8081/organizer/group/${id}/events`
+      );
 
       if (!response.ok) {
-        if (response.status === 404) {
-          // Dacă grupul nu are evenimente, setează lista goală fără eroare
-          setEvents([]);
-          setLoading(false);
-          return;
-        }
         throw new Error("Nu am reușit să obținem evenimentele");
       }
 
       const data = await response.json();
       setEvents(data);
       setLoading(false);
+      if (!data.length) {
+        setMessageEventsNotFound(data.messageNotFound);
+      }
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -40,15 +40,21 @@ const EventGroupDetails = () => {
   // Funcția de ștergere a unui eveniment
   const handleDelete = async (eventId) => {
     try {
-      const response = await fetch(`http://localhost:8081/organizer/event/${eventId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:8081/organizer/event/${eventId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Nu s-a putut șterge evenimentul");
+      } else {
+        fetchEvents();
       }
-
-      setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+      // setEvents((prevEvents) =>
+      //   prevEvents.filter((event) => event.id !== eventId)
+      // );
     } catch (error) {
       console.error(error);
       alert("A apărut o eroare la ștergerea evenimentului");
@@ -79,7 +85,7 @@ const EventGroupDetails = () => {
             />
           ))
         ) : (
-          <p>Nu există evenimente pentru acest grup.</p>
+          <p>{messageEventsNotFound}</p>
         )}
       </div>
 

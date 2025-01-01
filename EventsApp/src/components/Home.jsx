@@ -1,39 +1,55 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+import debounce from "lodash.debounce";
+
 function Home() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrganizer, setSelectedOrganizer] = useState("All");
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8081/event-groups/grouped-by-organizer"
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch events.");
-        }
-        const result = await response.json();
-        setData(result);
-      } catch (error) {
-        console.error("Error fetching events:", error.message,error.stack);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch data with query and organizer filters
+  const fetchEvents = async (query = "", organizer = "All") => {
+    try {
+      const response = await fetch(
+        `http://localhost:8081/event-groups/grouped-by-organizer?organizerId=${organizer}&searchQuery=${query}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch events.");
+      const result = await response.json();
+      setData(result);
+    } catch (error) {
+      console.error("Error fetching events:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce((query, organizer) => {
+      fetchEvents(query, organizer);
+    }, 500),
+    []
+  );
+
+  // Fetch data immediately on mount (no debounce)
+  useEffect(() => {
     fetchEvents();
   }, []);
 
+  // Handle search query changes
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+    const query = e.target.value;
+    setSearchQuery(query);
+    debouncedSearch(query, selectedOrganizer);
   };
 
+  // Handle organizer filter changes
   const handleOrganizerChange = (e) => {
-    setSelectedOrganizer(e.target.value);
+    const organizer = e.target.value;
+    setSelectedOrganizer(organizer);
     setSearchQuery("");
+    fetchEvents("", organizer); // Immediate fetch on organizer change
   };
 
   // Filtrarea datelor pe baza organizatorului selectat și a interogării de căutare
@@ -62,10 +78,10 @@ function Home() {
   return (
     <div className="bg-gradient-to-r from-gray-200 to-indigo-200 min-h-screen">
       <div className="container mx-auto p-6">
-       <h1 className="text-2xl font-bold text-center mb-4">Bine ai venit!</h1>
-       <p className="text-lg text-center mb-10">
-     Iată o listă cu evenimentele existente:
-       </p>
+        <h1 className="text-2xl font-bold text-center mb-4">Bine ai venit!</h1>
+        <p className="text-lg text-center mb-10">
+          Iată o listă cu evenimentele existente:
+        </p>
       </div>
 
       <div className="container mx-auto p-6">
@@ -100,11 +116,14 @@ function Home() {
           filteredData.map((userData, index) => (
             <div key={index} className="mb-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-5">
-                Organizator: {userData.user.first_name} {userData.user.last_name}
+                Organizator: {userData.user.first_name}{" "}
+                {userData.user.last_name}
               </h2>
               {userData.eventGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="mb-6">
-                  <h3 className="text-lg font-semibold mb-2">Grup: {group.name}</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    Grup: {group.name}
+                  </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {group.events.map((event) => (
                       <div
@@ -120,11 +139,15 @@ function Home() {
                           End: {new Date(event.endTime).toLocaleString()}
                         </p>
                         <p
-                          className={`mt-2 font-semibold ${
-                            event.status === "OPEN"
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
+                          className={`mt-2 font-semibold ${(() => {
+                            if (event.status === "CLOSED") {
+                              return "text-red-500";
+                            }
+                            if (event.status === "SCHEDULED") {
+                              return "text-blue-500";
+                            }
+                            return "text-green-500";
+                          })()}`}
                         >
                           {event.status}
                         </p>
@@ -142,7 +165,9 @@ function Home() {
             </div>
           ))
         ) : (
-          <div className="text-center py-10">Nu există evenimente disponibile.</div>
+          <div className="text-center py-10">
+            Nu există evenimente disponibile.
+          </div>
         )}
       </div>
     </div>
@@ -150,4 +175,3 @@ function Home() {
 }
 
 export default Home;
-
