@@ -68,8 +68,6 @@ const OrganizerDashboard = () => {
 
   const exportGroupParticipantsCSV = async (groupId) => {
     try {
-
-      console.log(`Group ID: ${groupId}`);
       const response = await fetch(
         `http://localhost:8081/organizer/export/group/${groupId}/participants/csv`,
         {
@@ -82,7 +80,7 @@ const OrganizerDashboard = () => {
       if (!response.ok) {
         throw new Error("Failed to export group participants CSV");
       }
-  
+  console.log(response);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -97,8 +95,6 @@ const OrganizerDashboard = () => {
     }
   };
   
-  
-
   return (
     <div className="max-w-4xl mx-auto bg-white p-8 rounded-md shadow-md mt-6">
       <h1 className="text-3xl font-bold text-center mb-6">

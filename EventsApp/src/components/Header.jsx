@@ -14,6 +14,7 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     navigate("/login");
     setIsDropdownOpen(false); // Închide dropdown-ul după logout
   };

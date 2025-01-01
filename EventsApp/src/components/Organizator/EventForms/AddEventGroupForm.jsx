@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom"; 
 function AddEventGroupForm() {
   const [name, setName] = useState("");
   const [idUser, setIdUser] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,7 +16,7 @@ function AddEventGroupForm() {
     const groupData = { name};
 
     try {
-      const token = localStorage.getItem("token"); // Obține token-ul pentru autorizare
+      const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:8081/organizer/add/event-groups", {
         method: "POST",
         headers: {
@@ -26,12 +27,12 @@ function AddEventGroupForm() {
       });
 
       const data = await response.json();
-      console.log("Răspuns de la backend:", data);
 
       if (response.ok) {
         alert("Grupul de evenimente a fost creat cu succes!");
         setName("");
         setIdUser("");
+        navigate("/organizer/dashboard"); 
       } else {
         alert(`Eroare la crearea grupului: ${data.error || "Eroare necunoscută"}`);
       }

@@ -270,7 +270,6 @@ exports.exportGroupParticipantsCSV = async (req, res) => {
 
     if (!events.length) {
       return res
-        .status(404)
         .json({ error: "Nu există evenimente în acest grup." });
     }
 
@@ -295,7 +294,6 @@ exports.exportGroupParticipantsCSV = async (req, res) => {
 
     if (!participants.length) {
       return res
-        .status(404)
         .json({ error: "Nu există participanți în acest grup." });
     }
 
