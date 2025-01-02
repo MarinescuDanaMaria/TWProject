@@ -17,7 +17,7 @@ const LoginForm = ({ setUserRole }) => {
       });
 
       const data = await response.json();
-      if (response.ok) {
+      if (data.success === true) {
         alert("Autentificare reușită!");
         localStorage.setItem("token", data.token);
         const decodedToken = JSON.parse(atob(data.token.split(".")[1]));
@@ -39,10 +39,8 @@ const LoginForm = ({ setUserRole }) => {
 
   const redirectToSpecificRole = (role) => {
     if (role === "USER") {
-      alert("USER");
       navigate("/user/dashboard");
     } else if (role === "ORGANIZATOR") {
-      alert("ORG");
       navigate("/organizer/dashboard");
     } else {
       alert("test");
@@ -54,7 +52,7 @@ const LoginForm = ({ setUserRole }) => {
   };
 
   return (
-    <div className="max-w-lg w-1/2 mx-auto bg-white border border-gray-300 p-8 rounded-md shadow-xl ">
+    <div className="max-w-lg w-1/2 mx-auto bg-white border border-gray-300 p-8 rounded-md shadow-xl mt-32 ">
       <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
       <form onSubmit={handleLogin}>
         <div className="mb-4">

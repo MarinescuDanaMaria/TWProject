@@ -12,7 +12,7 @@ const {
   getEventDetailsForOrganizer,
   getEventStats
 } = require("../controllers/eventController");
-const { addEventGroup, getEventGroupsGroupedByUser } = require("../controllers/eventGroupController");
+const { addEventGroup } = require("../controllers/eventGroupController");
 const { getGroupEvents } = require("../controllers/eventGroupController");
 
 router.get(
@@ -29,7 +29,6 @@ router.get(
 //Events Routes
 router.get("/event/:id", getEventDetails);
 router.get("/group/:id/events", getEventsByGroup);
-//router.get("/event/:id", showEvent);
 router.delete("/event/:id", deleteEvent);
 router.put("/event/:id", updateEvent);
 
@@ -46,12 +45,7 @@ router.get(
   roleMiddleware("ORGANIZATOR"),
   getGroupEvents
 );
-// router.get(
-//   "/event-groups/grouped-by-organizer",
-//   authMiddleware,
-//   roleMiddleware("ORGANIZATOR"),
-//   getEventGroupsGroupedByUser
-// );
+
 router.post(
   "/add/event-groups",
   authMiddleware,

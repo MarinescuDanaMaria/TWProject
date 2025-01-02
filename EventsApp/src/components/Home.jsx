@@ -7,24 +7,34 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrganizer, setSelectedOrganizer] = useState("All");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Fetch data with query and organizer filters
   const fetchEvents = async (query = "", organizer = "All") => {
+    setLoading(true); 
+    setErrorMessage(""); 
     try {
       const response = await fetch(
         `http://localhost:8081/event-groups/grouped-by-organizer?organizerId=${organizer}&searchQuery=${query}`
       );
-      if (!response.ok) throw new Error("Failed to fetch events.");
       const result = await response.json();
-      setData(result);
+
+      if (response.ok && result.success === true) {
+        setData(result.objects);
+      } else if (result.success === false) {
+        setData([]); 
+        setErrorMessage(result.message); 
+      } else {
+        setData([]);
+        setErrorMessage("Eroare necunoscută!");
+      }
     } catch (error) {
       console.error("Error fetching events:", error.message);
+      setErrorMessage("A apărut o eroare la conectarea cu serverul!");
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
-  // Debounced search function
   const debouncedSearch = useCallback(
     debounce((query, organizer) => {
       fetchEvents(query, organizer);
@@ -32,44 +42,22 @@ function Home() {
     []
   );
 
-  // Fetch data immediately on mount (no debounce)
   useEffect(() => {
     fetchEvents();
   }, []);
 
-  // Handle search query changes
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
     debouncedSearch(query, selectedOrganizer);
   };
 
-  // Handle organizer filter changes
   const handleOrganizerChange = (e) => {
     const organizer = e.target.value;
     setSelectedOrganizer(organizer);
     setSearchQuery("");
-    fetchEvents("", organizer); // Immediate fetch on organizer change
+    fetchEvents("", organizer); 
   };
-
-  // Filtrarea datelor pe baza organizatorului selectat și a interogării de căutare
-  const filteredData = data
-    .filter((userData) => {
-      if (selectedOrganizer === "All") return true;
-      return userData.user.id === selectedOrganizer;
-    })
-    .map((userData) => ({
-      ...userData,
-      eventGroups: userData.eventGroups
-        .map((eventGroup) => ({
-          ...eventGroup,
-          events: eventGroup.events.filter((event) =>
-            event.name.toLowerCase().includes(searchQuery.toLowerCase())
-          ),
-        }))
-        .filter((eventGroup) => eventGroup.events.length > 0), // Păstrează doar grupurile cu evenimente care se potrivesc
-    }))
-    .filter((userData) => userData.eventGroups.length > 0); // Păstrează doar organizatorii cu grupuri relevante
 
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
@@ -85,9 +73,7 @@ function Home() {
       </div>
 
       <div className="container mx-auto p-6">
-        {/* Secțiunea de căutare și filtrare */}
         <div className="flex items-center space-x-4 mb-6">
-          {/* Căutare */}
           <input
             type="text"
             placeholder="Caută eveniment..."
@@ -96,7 +82,6 @@ function Home() {
             className="p-2 border rounded-md w-1/2"
           />
 
-          {/* Dropdown Organizator */}
           <select
             value={selectedOrganizer}
             onChange={handleOrganizerChange}
@@ -110,10 +95,10 @@ function Home() {
             ))}
           </select>
         </div>
-
-        {/* Afișare Evenimente */}
-        {filteredData.length > 0 ? (
-          filteredData.map((userData, index) => (
+        {errorMessage ? (
+          <div className="text-center text-red-500 py-10">{errorMessage}</div>
+        ) : data.length > 0 ? (
+          data.map((userData, index) => (
             <div key={index} className="mb-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-5">
                 Organizator: {userData.user.first_name}{" "}

@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function WelcomeEventPage() {
-  const { id } = useParams(); // Extract event ID from the route
-  const [event, setEvent] = useState(null); // Store event details
+  const { id } = useParams();
+  const [event, setEvent] = useState(null); 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Handle errors
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        // Fetch event details
         const response = await fetch(`http://localhost:8081/event-web/${id}`, {
           method: "GET",
           headers: {
@@ -53,17 +52,13 @@ function WelcomeEventPage() {
 
     <div className="h-screen flex items-center justify-center bg-gray-100">
     <div className="text-center max-w-3xl p-10 bg-white shadow-2xl rounded-lg">
-      {/* Larger Image */}
       <img
         src="http://localhost:8081/images/events_web.png"
         alt="Event Picture"
-        className="mx-auto mb-10 w-64 h-64 object-contain" // Increased width and height
+        className="mx-auto mb-10 w-64 h-64 object-contain"
       />
-  
-      {/* Welcome Text */}
       <h1 className="text-6xl font-extrabold mb-8 text-gray-800">WELCOME TO {event.name}</h1>
-  
-      {/* Event End Time */}
+
       <p className="text-2xl mb-6 text-gray-600">
         The event will end at:{" "}
         <span className="font-bold text-gray-900">

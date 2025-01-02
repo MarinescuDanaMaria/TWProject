@@ -1,6 +1,6 @@
 const express = require("express");
 const { getEventGroupsGroupedByUser } = require("../controllers/eventGroupController");
-const { getEventDetails } = require("../controllers/eventController");
+const { getEventDetails, getFilteredEventGroups } = require("../controllers/eventController");
 
 const router = express.Router();
 router.get("/event-groups/grouped-by-organizer", getEventGroupsGroupedByUser);

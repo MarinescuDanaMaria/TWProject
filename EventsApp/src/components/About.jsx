@@ -24,21 +24,20 @@ function About() {
         </p>
       </div>
 
-      {/* Secțiunea Contactați-ne */}
       <div id="contact" className="mt-20 bg-gray-900 bg-opacity-60 p-6 rounded-lg shadow-lg w-full max-w-4xl">
         <h2 className="text-2xl font-bold mb-4 text-center">Contactați-ne</h2>
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
             <FaEnvelope className="text-indigo-500 text-xl" />
-            <span className="text-base">contact@aplicatie.ro</span>
+            <span className="text-base">eventsApp@gmail.ro</span>
           </div>
           <div className="flex items-center space-x-4">
             <FaPhone className="text-indigo-500 text-xl" />
-            <span className="text-base">+40 123 456 789</span>
+            <span className="text-base">+40 732 416 589</span>
           </div>
           <div className="flex items-center space-x-4">
             <FaMapMarkerAlt className="text-indigo-500 text-xl" />
-            <span className="text-base">Strada Exemplu, Nr. 123, București, România</span>
+            <span className="text-base">Strada Maceselor, Nr. 76, București, România</span>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 const { EventGroup, User, Event } = require("../models");
-
+const { Op } = require("sequelize");
 exports.addEventGroup = async (req, res) => {
   try {
     const { name } = req.body;
@@ -43,25 +43,36 @@ exports.getGroupEvents = async (req, res) => {
 
 exports.getEventGroupsGroupedByUser = async (req, res) => {
   try {
-    // Căutăm toate grupurile de evenimente, incluzând utilizatorul și evenimentele
+    const { organizerId, searchQuery } = req.query;
+
+    const whereOrganizer =
+      organizerId && organizerId !== "All" ? { idUser: organizerId } : {};
+    const whereEventName = searchQuery
+      ? { name: { [Op.like]: `%${searchQuery}%` } }
+      : {};
+
     const eventGroups = await EventGroup.findAll({
+      where: whereOrganizer,
       include: [
         {
-          model: Event, // Incluzând evenimentele pentru fiecare grup
-          as: "events", // Folosind aliasul definit în asocierea din modelul EventGroup
+          model: Event,
+          as: "events",
+          where: whereEventName,
         },
         {
-          model: User, // Incluzând utilizatorul asociat cu grupul de evenimente
-          as: "organizer", // Aliasul pentru utilizator (asigură-te că ai definit corect asocierea)
+          model: User,
+          as: "organizer",
         },
       ],
     });
 
-    // Dacă nu găsim niciun grup de evenimente
     if (!eventGroups.length) {
       return res
-        .status(404)
-        .json({ error: "Nu au fost găsite grupuri de evenimente!" });
+        .status(200)
+        .json({
+          success: false,
+          message: "Nu au fost găsite grupuri de evenimente!",
+        });
     }
 
     eventGroups.forEach((group) => {
@@ -120,7 +131,9 @@ exports.getEventGroupsGroupedByUser = async (req, res) => {
       return acc;
     }, {});
 
-    res.status(200).json(Object.values(groupedByUser));
+    res
+      .status(200)
+      .json({ success: true, objects: Object.values(groupedByUser) });
   } catch (error) {
     console.error(error);
     res
