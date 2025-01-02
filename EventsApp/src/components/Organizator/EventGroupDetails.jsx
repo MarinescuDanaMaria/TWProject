@@ -71,8 +71,13 @@ const EventGroupDetails = () => {
   if (error) return <div>Eroare: {error}</div>;
 
   return (
-    <div>
-      <h1>Detalii Grup de Evenimente</h1>
+    <div className="ml-12 mt-12">
+      <h1 className="text-3xl font-extrabold text-gray-800 underline decoration-blue-500">
+        Explorează Detaliile Grupului de Evenimente
+      </h1>
+      <p className="text-lg text-gray-600 mt-2">
+        Descoperă și gestionează evenimentele asociate acestui grup.
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
         {events.length > 0 ? (
@@ -85,7 +90,9 @@ const EventGroupDetails = () => {
             />
           ))
         ) : (
-          <p>{messageEventsNotFound}</p>
+          <p className="text-yellow-500 bg-gray-100 border border-yellow-500 rounded-md p-4">
+            {messageEventsNotFound}
+          </p>
         )}
       </div>
 

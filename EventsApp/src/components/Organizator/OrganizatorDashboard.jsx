@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -76,11 +75,22 @@ const OrganizerDashboard = () => {
           },
         }
       );
-  
+      // Verificăm dacă răspunsul este JSON (nu un CSV)
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+
+        // Dacă există un mesaj de eroare de la backend, afișează alert
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+      }
+
       if (!response.ok) {
         throw new Error("Failed to export group participants CSV");
       }
-  console.log(response);
+      console.log(response);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -90,11 +100,10 @@ const OrganizerDashboard = () => {
       link.click();
       link.remove();
     } catch (error) {
-      console.error("Error exporting group participants CSV:", error);
       alert("Failed to export group participants CSV.");
     }
   };
-  
+
   return (
     <div className="max-w-4xl mx-auto bg-white p-8 rounded-md shadow-md mt-6">
       <h1 className="text-3xl font-bold text-center mb-6">
@@ -143,27 +152,27 @@ const OrganizerDashboard = () => {
         ) : eventGroups.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {eventGroups.map((group) => (
-  <div
-    key={group.id}
-    className="p-4 border border-gray-200 rounded-md shadow-sm hover:shadow-lg transition-shadow"
-  >
-    <h3 className="text-xl font-semibold text-gray-800 mb-2">
-      {group.name}
-    </h3>
-    <Link
-      to={`/organizer/event-group/${group.id}`}
-      className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-    >
-      Vizualizează Detalii
-    </Link>
-    <button
-      onClick={() => exportGroupParticipantsCSV(group.id)}
-      className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-    >
-      Exportă Participanți
-    </button>
-  </div>
-))}
+              <div
+                key={group.id}
+                className="p-4 border border-gray-200 rounded-md shadow-sm hover:shadow-lg transition-shadow"
+              >
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  {group.name}
+                </h3>
+                <Link
+                  to={`/organizer/event-group/${group.id}`}
+                  className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                >
+                  Vizualizează Detalii
+                </Link>
+                <button
+                  onClick={() => exportGroupParticipantsCSV(group.id)}
+                  className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Exportă Participanți
+                </button>
+              </div>
+            ))}
           </div>
         ) : (
           <p className="text-gray-600">

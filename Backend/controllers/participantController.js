@@ -125,13 +125,12 @@ exports.getParticipantsByEvent = async (req, res) => {
 
     if (!participants.length) {
       return res
-        .status(404)
-        .json({ error: "Nu există participanți la acest eveniment." });
+        .status(200)
+        .json({ message: "Nu există participanți la acest eveniment." });
     }
 
     res.status(200).json(participants);
   } catch (error) {
-    console.error("Eroare la obținerea participanților:", error);
     res.status(500).json({ error: "Eroare la obținerea participanților." });
   }
 };
@@ -153,8 +152,8 @@ exports.exportParticipantsCSV = async (req, res) => {
 
     if (!participants.length) {
       return res
-        .status(404)
-        .json({ error: "Nu există participanți la acest eveniment." });
+        .status(200)
+        .json({ message: "Nu există participanți la acest eveniment." });
     }
 
     // Mapăm datele pentru CSV
@@ -208,8 +207,8 @@ exports.exportParticipantsPDF = async (req, res) => {
 
     if (!participants.length) {
       return res
-        .status(404)
-        .json({ error: "Nu există participanți la acest eveniment." });
+        .status(200)
+        .json({ message: "Nu există participanți la acest eveniment." });
     }
 
     const doc = new PDFDocument();
@@ -269,8 +268,7 @@ exports.exportGroupParticipantsCSV = async (req, res) => {
     });
 
     if (!events.length) {
-      return res
-        .json({ error: "Nu există evenimente în acest grup." });
+      return res.json({ error: "Nu există evenimente în acest grup." });
     }
 
     const eventIds = events.map((event) => event.id);
@@ -293,8 +291,7 @@ exports.exportGroupParticipantsCSV = async (req, res) => {
     });
 
     if (!participants.length) {
-      return res
-        .json({ error: "Nu există participanți în acest grup." });
+      return res.json({ error: "Nu există participanți în acest grup." });
     }
 
     // Mapăm datele pentru CSV
