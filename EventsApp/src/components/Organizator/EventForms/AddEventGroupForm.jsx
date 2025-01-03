@@ -45,7 +45,6 @@ function AddEventGroupForm() {
     <div className="max-w-lg mx-auto bg-white p-8 rounded-md shadow-md">
       <h2 className="text-2xl font-semibold text-center mb-6">Add Event Group</h2>
       <form onSubmit={handleSubmit}>
-        {/* Group Name */}
         <div className="mb-4">
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Group Name
@@ -59,8 +58,6 @@ function AddEventGroupForm() {
             required
           />
         </div>
-
-        {/* Submit Button */}
         <div className="text-center">
           <button
             type="submit"

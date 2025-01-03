@@ -2,13 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
 
 const QrCodeScanner = ({ onScanSuccess, onScanError }) => {
-  const qrCodeRegionId = "qr-reader"; // ID-ul div-ului pentru scanner
+  const qrCodeRegionId = "qr-reader"; 
   const [scanning, setScanning] = useState(false);
   const html5QrCode = useRef(null);
 
   useEffect(() => {
     return () => {
-      // Cleanup: oprirea scannerului la demontarea componentei
       if (html5QrCode.current) {
         stopScanning();
       }
@@ -22,20 +21,20 @@ const QrCodeScanner = ({ onScanSuccess, onScanError }) => {
 
       const cameras = await Html5Qrcode.getCameras();
       if (cameras && cameras.length > 0) {
-        const cameraId = cameras[0].id; // Alegem prima cameră disponibilă
+        const cameraId = cameras[0].id; 
         html5QrCode.current
           .start(
             cameraId,
             {
-              fps: 10, // Frame-uri pe secundă
-              qrbox: { width: 250, height: 250 }, // Dimensiunea zonei de scanare
+              fps: 10,
+              qrbox: { width: 250, height: 250 }, 
             },
             (decodedText) => {
-              onScanSuccess(decodedText); // Callback la succes
-              stopScanning(); // Oprim scannerul după succes
+              onScanSuccess(decodedText); 
+              stopScanning(); 
             },
             (errorMessage) => {
-              onScanError(errorMessage); // Callback la eroare
+              onScanError(errorMessage); 
             }
           )
           .catch((err) => {

@@ -13,7 +13,7 @@ module.exports = (sequelize) => {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "Events", // Se referă la tabela EVENTS
+          model: "Events", 
           key: "id",
         },
       },
@@ -21,7 +21,7 @@ module.exports = (sequelize) => {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "USERS", // Se referă la tabela USERS
+          model: "USERS", 
           key: "id",
         },
       },
@@ -31,12 +31,12 @@ module.exports = (sequelize) => {
       },
       confirmed_at: {
         type: DataTypes.DATE,
-        allowNull: true, // Inițial `null` până când se confirmă
+        allowNull: true, 
       },
     },
     {
       tableName: "PARTICIPANTS",
-      timestamps: true, // Adaugă createdAt și updatedAt
+      timestamps: true,
     }
   );
 

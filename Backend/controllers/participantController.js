@@ -1,21 +1,17 @@
-const { Participant, Event, User, EventGroup } = require("../models");
+const { Participant, Event, User } = require("../models");
 const { Parser } = require("json2csv");
+const PDFDocument = require("pdfkit");
 
 exports.addParticipant = async (req, res) => {
   try {
-    console.log("User din req:", req.user);
     const userId = req.user.userId;
-    const { eventId } = req.params; // ID-ul utilizatorului din token-ul autentificat
-    console.log("Cererea a ajuns la addParticipant.");
-    console.log("Event ID:", req.params.eventId);
-    console.log("User ID:", req.user.userId);
-    // Verificăm dacă evenimentul există
+    const { eventId } = req.params; 
+ 
     const event = await Event.findByPk(eventId);
     if (!event) {
       return res.status(404).json({ error: "Evenimentul nu a fost găsit!" });
     }
 
-    // Verificăm dacă utilizatorul este deja participant
     const existingParticipant = await Participant.findOne({
       where: { event_id: eventId, user_id: userId },
     });
@@ -27,30 +23,29 @@ exports.addParticipant = async (req, res) => {
       });
     }
 
-    // Adăugăm utilizatorul la eveniment cu `confirmed` setat la `false`
     const participant = await Participant.create({
       event_id: eventId,
       user_id: userId,
       confirmed: false,
     });
 
-    res
-      .status(201)
+    res.status(200)
       .json({ message: "Participant adăugat cu succes!", participant });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Eroare la adăugarea participantului." });
   }
 };
+
 exports.isParticipant = async (req, res) => {
   try {
-    const userId = req.user.userId; // ID-ul utilizatorului extras din token
-    const { eventId } = req.params; // ID-ul evenimentului din parametrii rutei
+    const userId = req.user.userId;
+    const { eventId } = req.params; 
 
-    // Caută dacă utilizatorul este deja participant
     const participant = await Participant.findOne({
       where: { event_id: eventId, user_id: userId },
     });
+
     res.status(200).json({
       isParticipant: !!participant,
       isConfirmedParticipant: participant ? !!participant.confirmed : false,
@@ -60,28 +55,22 @@ exports.isParticipant = async (req, res) => {
     res.status(500).json({ error: "Eroare la verificarea participării." });
   }
 };
+
 exports.confirmParticipant = async (req, res) => {
   try {
-    const { eventId } = req.params; // Extract the event ID from the URL
-    const { qrData } = req.body; // Extract the QR code data from the request body
-    const userId = req.user.userId; // Extract the user ID from the authenticated user
+    const { eventId } = req.params; 
+    const { qrData } = req.body; 
+    const userId = req.user.userId; 
 
-    console.log("QR Data:", qrData);
-    console.log("Event ID:", eventId);
-    console.log("User ID:", userId);
-
-    // Validate that the QR data matches the event ID
     if (qrData !== eventId) {
       return res.status(400).json({ error: "Invalid QR Code for this event." });
     }
 
-    // Check if the event exists
     const event = await Event.findByPk(eventId);
     if (!event) {
       return res.status(404).json({ error: "Event not found." });
     }
 
-    // Check if the user is already a participant
     const participant = await Participant.findOne({
       where: { event_id: eventId, user_id: userId },
     });
@@ -92,7 +81,6 @@ exports.confirmParticipant = async (req, res) => {
       });
     }
 
-    // Confirm the participation
     participant.confirmed = true;
     participant.confirmed_at = new Date();
     await participant.save();
@@ -108,6 +96,7 @@ exports.confirmParticipant = async (req, res) => {
       .json({ error: "An error occurred while confirming participation." });
   }
 };
+
 exports.getParticipantsByEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -117,8 +106,8 @@ exports.getParticipantsByEvent = async (req, res) => {
       include: [
         {
           model: User,
-          as: "user", // Aliasul definit în relație
-          attributes: ["id", "email", "first_name", "last_name"], // Afișează informațiile relevante despre utilizator
+          as: "user",
+          attributes: ["id", "email", "first_name", "last_name"], 
         },
       ],
     });
@@ -156,7 +145,6 @@ exports.exportParticipantsCSV = async (req, res) => {
         .json({ message: "Nu există participanți la acest eveniment." });
     }
 
-    // Mapăm datele pentru CSV
     const csvData = participants.map((p) => ({
       ID: p.user.id,
       Email: p.user.email,
@@ -178,13 +166,11 @@ exports.exportParticipantsCSV = async (req, res) => {
       .json({ error: "Eroare la exportarea participanților în CSV." });
   }
 };
-const PDFDocument = require("pdfkit");
 
 exports.exportParticipantsPDF = async (req, res) => {
   try {
     const { eventId } = req.params;
 
-    // Obține detalii despre eveniment
     const event = await Event.findByPk(eventId, {
       attributes: ["name", "description", "startTime", "endTime"],
     });
@@ -193,7 +179,6 @@ exports.exportParticipantsPDF = async (req, res) => {
       return res.status(404).json({ error: "Evenimentul nu a fost găsit." });
     }
 
-    // Obține participanți
     const participants = await Participant.findAll({
       where: { event_id: eventId },
       include: [
@@ -223,7 +208,6 @@ exports.exportParticipantsPDF = async (req, res) => {
 
     doc.pipe(res);
 
-    // Adaugă informațiile despre eveniment
     doc.fontSize(18).text(`Event: ${event.name}`, { align: "center" });
     doc.moveDown();
     doc.fontSize(14).text(`Description: ${event.description}`);
@@ -234,7 +218,6 @@ exports.exportParticipantsPDF = async (req, res) => {
     doc.fontSize(16).text("Participants:", { underline: true });
     doc.moveDown();
 
-    // Adaugă lista participanților
     participants.forEach((p, index) => {
       doc
         .fontSize(12)
@@ -261,10 +244,9 @@ exports.exportGroupParticipantsCSV = async (req, res) => {
   try {
     const { groupId } = req.params;
 
-    // Găsește toate evenimentele asociate grupului
     const events = await Event.findAll({
       where: { idGroup: groupId },
-      attributes: ["id", "name"], // Extrage doar ID-ul și numele evenimentului
+      attributes: ["id", "name"], 
     });
 
     if (!events.length) {
@@ -273,7 +255,6 @@ exports.exportGroupParticipantsCSV = async (req, res) => {
 
     const eventIds = events.map((event) => event.id);
 
-    // Obține participanții pentru toate evenimentele din grup
     const participants = await Participant.findAll({
       where: { event_id: eventIds },
       include: [
@@ -285,7 +266,7 @@ exports.exportGroupParticipantsCSV = async (req, res) => {
         {
           model: Event,
           as: "event",
-          attributes: ["name"], // Extrage numele evenimentului
+          attributes: ["name"], 
         },
       ],
     });
@@ -294,21 +275,18 @@ exports.exportGroupParticipantsCSV = async (req, res) => {
       return res.json({ error: "Nu există participanți în acest grup." });
     }
 
-    // Mapăm datele pentru CSV
     const csvData = participants.map((p) => ({
       ID: p.user.id,
       Email: p.user.email,
       Name: `${p.user.first_name} ${p.user.last_name}`,
-      Event: p.event.name, // Adaugă numele evenimentului
+      Event: p.event.name,
       Confirmed: p.confirmed ? "Yes" : "No",
       "Confirmation Date": p.confirmed_at || "Not Confirmed",
     }));
 
-    // Generăm CSV-ul
     const json2csvParser = new Parser();
     const csv = json2csvParser.parse(csvData);
 
-    // Răspuns cu fișierul CSV
     res.header("Content-Type", "text/csv");
     res.attachment(`group_${groupId}_participants.csv`);
     res.status(200).send(csv);

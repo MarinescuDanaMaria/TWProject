@@ -23,7 +23,7 @@ cron.schedule("* * * * *", async () => {
 
     for (const event of events) {
       const updatedEvent = updateEventStatus(event);
-      await updatedEvent.save(); // Salvează modificările în baza de date
+      await updatedEvent.save(); 
     }
 
     console.log("Statusurile evenimentelor au fost actualizate.");

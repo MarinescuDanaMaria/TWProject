@@ -65,9 +65,9 @@ exports.addEvent = async (req, res) => {
 
     await QRCode.toFile(imagePath, eventUrl, {
       type: "png",
-      width: 500, // Dimensiune mai mare
-      margin: 2, // Spațiu alb redus
-      errorCorrectionLevel: "H", // Nivel înalt de corecție a erorilor
+      width: 500, 
+      margin: 2, 
+      errorCorrectionLevel: "H", 
     });
 
     await QrCode.create({
@@ -95,7 +95,7 @@ exports.getEventDetails = async (req, res) => {
       include: [
         {
           model: QrCode,
-          as: "qrCode", // Asigură-te că aliasul este corect
+          as: "qrCode", 
           attributes: ["image_url"],
         },
       ],
@@ -137,6 +137,7 @@ exports.getEventsByGroup = async (req, res) => {
     res.status(500).json({ error: "Eroare la obținerea evenimentelor!" });
   }
 };
+
 exports.showEvent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -229,18 +230,18 @@ exports.updateEvent = async (req, res) => {
     res.status(500).json({ error: "Eroare la actualizarea evenimentului." });
   }
 };
+
 exports.getEventDetailsForOrganizer = async (req, res) => {
   try {
     const { idGroup, idEvent } = req.params;
 
-    // Fetch the event by ID and validate its group
     const event = await Event.findOne({
       where: { id: idEvent, idGroup },
       include: [
         {
           model: QrCode,
-          as: "qrCode", // Ensure alias matches your association
-          attributes: ["image_url", "qr_code"], // Include QR code details
+          as: "qrCode", 
+          attributes: ["image_url", "qr_code"], 
         },
       ],
     });
@@ -251,7 +252,6 @@ exports.getEventDetailsForOrganizer = async (req, res) => {
         .json({ error: "Event not found or does not belong to this group!" });
     }
 
-    // Return the event details along with QR code information
     res.status(200).json({
       id: event.id,
       name: event.name,
@@ -283,7 +283,7 @@ exports.getUnconfirmedEvents = async (req, res) => {
       include: [
         {
           model: Event,
-          as: "event", // Alias definit în relația Participant -> Event
+          as: "event", 
           attributes: [
             "id",
             "name",
@@ -294,13 +294,13 @@ exports.getUnconfirmedEvents = async (req, res) => {
           ],
           where: {
             endTime: {
-              [Op.gt]: now, // Verifică dacă evenimentul este activ (endTime > acum)
+              [Op.gt]: now, 
             },
           },
           include: [
             {
               model: QrCode,
-              as: "qrCode", // Alias definit în relația Event -> QrCode
+              as: "qrCode",
               attributes: ["image_url"],
             },
           ],
@@ -308,12 +308,10 @@ exports.getUnconfirmedEvents = async (req, res) => {
       ],
     });
 
-    // Extrage evenimentele din participanți
     const unconfirmedEvents = participants
       .map((participant) => participant.event)
-      .filter((event) => event !== null); // Asigură-te că evenimentele nu sunt nule
+      .filter((event) => event !== null);
 
-    console.log("Unconfirmed Events:", unconfirmedEvents);
     res.status(200).json(unconfirmedEvents);
   } catch (error) {
     console.error("Eroare la obținerea evenimentelor neconfirmate:", error);
@@ -325,17 +323,13 @@ exports.getUnconfirmedEvents = async (req, res) => {
 
 exports.getEventStats = async (req, res) => {
   try {
-    const userId = req.user.userId; // ID-ul utilizatorului autentificat
+    const userId = req.user.userId; 
 
-    console.log("Fetching stats for userId:", userId);
-
-    // Găsește toate grupurile create de utilizator
     const groups = await EventGroup.findAll({
-      where: { idUser: userId }, // idUser este organizatorul grupului
-      attributes: ["id"], // Doar ID-urile grupurilor
+      where: { idUser: userId },
+      attributes: ["id"], 
     });
 
-    // Extrage doar ID-urile grupurilor
     const groupIds = groups.map((group) => group.id);
 
     if (!groupIds.length) {
@@ -346,28 +340,24 @@ exports.getEventStats = async (req, res) => {
       });
     }
 
-    // Numără toate evenimentele care aparțin grupurilor
     const totalEvents = await Event.count({
       where: { idGroup: groupIds },
     });
 
-    // Numără evenimentele în desfășurare (status: "OPEN")
     const ongoingEvents = await Event.count({
       where: { idGroup: groupIds, status: "OPEN" },
     });
 
-    // Numără participanții la evenimentele din grupurile respective
     const totalParticipants = await Participant.count({
       include: [
         {
           model: Event,
-          as: "event", // Specifică aliasul definit în relația Participant -> Event
+          as: "event", 
           where: { idGroup: groupIds },
         },
       ],
     });
 
-    // Returnează statisticile
     res.status(200).json({
       totalEvents,
       ongoingEvents,

@@ -28,7 +28,6 @@ const EventDetails = () => {
         const data = await response.json();
         setEvent(data);
 
-        // Fetch participants
         const participantsResponse = await fetch(
           `http://localhost:8081/organizer/event/${idEvent}/participants`,
           {
@@ -64,10 +63,9 @@ const EventDetails = () => {
           },
         }
       );
-      const data = await response.json(); // Obține răspunsul ca JSON
+      const data = await response.json(); 
 
       if (response.ok && data.message) {
-        // Dacă există mesaj (nu sunt participanți)
         alert(data.message);
         return;
       }
@@ -99,10 +97,9 @@ const EventDetails = () => {
           },
         }
       );
-      const data = await response.json(); // Obține răspunsul ca JSON
+      const data = await response.json(); 
 
       if (response.ok && data.message) {
-        // Dacă există mesaj (nu sunt participanți)
         alert(data.message);
         return;
       }

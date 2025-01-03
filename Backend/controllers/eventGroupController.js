@@ -91,7 +91,7 @@ exports.getEventGroupsGroupedByUser = async (req, res) => {
       );
     });
 
-    // Eliminăm grupurile care nu mai au evenimente după filtrare
+
     const filteredEventGroups = eventGroups.filter(
       (group) => group.events.length > 0
     );
@@ -104,28 +104,26 @@ exports.getEventGroupsGroupedByUser = async (req, res) => {
     });
 
     const groupedByUser = filteredEventGroups.reduce((acc, group) => {
-      // Check if the organizer exists
       if (group.organizer && group.organizer.id) {
-        const userId = group.organizer.id; // Use the organizer's ID
+        const userId = group.organizer.id; 
 
-        // If the user doesn't exist in the accumulator, add them
+         // Dacă utilizatorul nu există în acumulare, îl adăugăm
         if (!acc[userId]) {
           acc[userId] = {
-            user: group.organizer, // Organizer details
-            eventGroups: [], // List of event groups
+            user: group.organizer, 
+            eventGroups: [], 
           };
         }
 
-        // Convert the group and its events to plain objects before adding
+       // Convertim grupul și evenimentele în obiecte simple
         const plainGroup = {
-          ...group.toJSON(), // Convert the group model to a plain object
-          events: group.events.map((event) => event.toJSON()), // Convert events to plain objects
+          ...group.toJSON(),
+          events: group.events.map((event) => event.toJSON()), 
         };
 
-        // Add the plain group to the organizer
         acc[userId].eventGroups.push(plainGroup);
       } else {
-        console.log("Missing organizer for group:", group); // Log groups with missing organizers
+        console.log("Missing organizer for group:", group); 
       }
 
       return acc;

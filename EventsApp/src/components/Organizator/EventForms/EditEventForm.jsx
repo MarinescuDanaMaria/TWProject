@@ -50,8 +50,8 @@ const EditEventForm = ({ event, onClose, onUpdate }) => {
       }
 
       const updatedEvent = await response.json();
-      onUpdate(updatedEvent); // Apelează onUpdate cu evenimentul actualizat
-      onClose(); // Închide formularul după actualizare
+      onUpdate(updatedEvent);
+      onClose(); 
     } catch (error) {
       console.error(error);
       setError(error.message || "A apărut o eroare");
