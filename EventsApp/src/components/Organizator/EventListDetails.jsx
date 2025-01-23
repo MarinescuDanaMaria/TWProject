@@ -63,24 +63,30 @@ const EventDetails = () => {
           },
         }
       );
-      const data = await response.json(); 
 
-      if (response.ok && data.message) {
-        alert(data.message);
-        return;
+      if (response.headers.get("content-type")?.includes("application/json")) {
+        const data = await response.json();
+        if (data.error) {
+          alert(data.error);
+          return;
+        } else if (data.message) {
+          alert(data.message);
+          return;
+        }
       }
-      if (!response.ok) {
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `participants_event_${idEvent}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else {
         throw new Error("Failed to export CSV");
       }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `participants_event_${idEvent}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
     } catch (error) {
       console.error("Error exporting CSV:", error);
       alert("Failed to export CSV.");
@@ -97,24 +103,29 @@ const EventDetails = () => {
           },
         }
       );
-      const data = await response.json(); 
-
-      if (response.ok && data.message) {
-        alert(data.message);
-        return;
+      if (response.headers.get("content-type")?.includes("application/json")) {
+        const data = await response.json();
+        if (data.error) {
+          alert(data.error);
+          return;
+        } else if (data.message) {
+          alert(data.message); 
+          return;
+        }
       }
-      if (!response.ok) {
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `participants_event_${idEvent}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else {
         throw new Error("Failed to export PDF");
       }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `participants_event_${idEvent}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
     } catch (error) {
       console.error("Error exporting PDF:", error);
       alert("Failed to export PDF.");

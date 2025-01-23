@@ -15,10 +15,10 @@ router.get("/dashboard", authMiddleware, roleMiddleware("user"), (req, res) => {
 router.post("/join-event/:eventId", authMiddleware,roleMiddleware("user"), addParticipant);
 
 // Rută pentru verificarea participării
-router.get("/is-participant/:eventId", authMiddleware, isParticipant);
+router.get("/is-participant/:eventId", authMiddleware,roleMiddleware("user"), isParticipant);
 
 // Route for confirming participation
-router.post("/confirm-participation/:eventId", authMiddleware, confirmParticipant);
+router.post("/confirm-participation/:eventId", authMiddleware,roleMiddleware("user"), confirmParticipant);
 
 // Ruta pentru obținerea evenimentelor neconfirmate
 router.get("/unconfirmed-events", authMiddleware, roleMiddleware("user"), getUnconfirmedEvents);

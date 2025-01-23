@@ -67,7 +67,7 @@ router.get("/event/:eventId/participants", authMiddleware,  roleMiddleware("ORGA
 router.get("/event/:eventId/participants/csv", authMiddleware, roleMiddleware("ORGANIZATOR"), exportParticipantsCSV);
 router.get("/event/:eventId/participants/pdf", authMiddleware, roleMiddleware("ORGANIZATOR"), exportParticipantsPDF);
 
-router.get("/export/group/:groupId/participants/csv", exportGroupParticipantsCSV);
+router.get("/export/group/:groupId/participants/csv", roleMiddleware("ORGANIZATOR"),exportGroupParticipantsCSV);
 
 router.get("/event-stats", authMiddleware, roleMiddleware("ORGANIZATOR"), getEventStats);
 
